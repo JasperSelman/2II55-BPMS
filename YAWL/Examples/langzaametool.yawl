@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specificationSet xmlns="http://www.yawlfoundation.org/yawlschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://www.yawlfoundation.org/yawlschema http://www.yawlfoundation.org/yawlschema/YAWL_Schema3.0.xsd">
+  <specification uri="langzaametool">
+    <metaData>
+      <creator>s107333</creator>
+      <description>No description provided</description>
+      <version>0.1</version>
+      <persistent>false</persistent>
+      <identifier>UID_8bbdf31b-4edb-4a0b-ae7a-2101b69d5eb0</identifier>
+    </metaData>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" />
+    <decomposition id="Net" isRootNet="true" xsi:type="NetFactsType">
+      <processControlElements>
+        <inputCondition id="InputCondition">
+          <flowsInto>
+            <nextElementRef id="Receive_Application" />
+          </flowsInto>
+        </inputCondition>
+        <task id="Receive_Application">
+          <name>Receive Application</name>
+          <flowsInto>
+            <nextElementRef id="C" />
+          </flowsInto>
+          <join code="xor" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+          <decomposesTo id="Begin_My_Career" />
+        </task>
+        <condition id="C">
+          <flowsInto>
+            <nextElementRef id="Check_for_Completeness" />
+          </flowsInto>
+        </condition>
+        <task id="Check_for_Completeness">
+          <name>Check for Completeness</name>
+          <flowsInto>
+            <nextElementRef id="C_1" />
+            <predicate ordering="0">true()</predicate>
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="C_2" />
+            <isDefaultFlow />
+          </flowsInto>
+          <join code="xor" />
+          <split code="xor" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+          <decomposesTo id="Check_for_Completeness" />
+        </task>
+        <condition id="C_1" />
+        <condition id="C_2">
+          <flowsInto>
+            <nextElementRef id="T_1" />
+          </flowsInto>
+        </condition>
+        <task id="T_1">
+          <flowsInto>
+            <nextElementRef id="C_3" />
+          </flowsInto>
+          <join code="xor" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
+        <condition id="C_3">
+          <flowsInto>
+            <nextElementRef id="Check_for_Completeness" />
+          </flowsInto>
+        </condition>
+        <outputCondition id="OutputCondition" />
+      </processControlElements>
+    </decomposition>
+    <decomposition id="Begin_My_Career" xsi:type="WebServiceGatewayFactsType">
+      <name>Begin My Career</name>
+      <externalInteraction>manual</externalInteraction>
+    </decomposition>
+    <decomposition id="Check_for_Completeness" xsi:type="WebServiceGatewayFactsType">
+      <name>Check for Completeness</name>
+      <externalInteraction>manual</externalInteraction>
+    </decomposition>
+  </specification>
+  <layout>
+    <locale language="en" country="US"/>
+    <specification id="langzaametool">
+      <size w="58" h="28"/>
+      <net id="Net">
+        <bounds x="0" y="0" w="1364" h="495"/>
+        <frame x="0" y="0" w="1367" h="498"/>
+        <viewport x="0" y="0" w="1367" h="498"/>
+        <vertex id="C">
+          <attributes>
+            <bounds x="232" y="288" w="32" h="32"/>
+          </attributes>
+        </vertex>
+        <vertex id="C_1">
+          <attributes>
+            <bounds x="484" y="304" w="32" h="32"/>
+          </attributes>
+        </vertex>
+        <vertex id="C_3">
+          <attributes>
+            <bounds x="288" y="200" w="32" h="32"/>
+          </attributes>
+        </vertex>
+        <vertex id="C_2">
+          <attributes>
+            <bounds x="484" y="200" w="32" h="32"/>
+          </attributes>
+        </vertex>
+        <vertex id="OutputCondition">
+          <attributes>
+            <bounds x="576" y="304" w="32" h="32"/>
+          </attributes>
+        </vertex>
+        <vertex id="InputCondition">
+          <attributes>
+            <bounds x="20" y="288" w="32" h="32"/>
+          </attributes>
+        </vertex>
+        <container id="Receive_Application">
+          <vertex>
+            <iconpath>automatic.png</iconpath>
+            <attributes>
+              <bounds x="128" y="288" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="96" y="320" w="96" h="40"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="Check_for_Completeness">
+          <vertex>
+            <iconpath>manual.png</iconpath>
+            <attributes>
+              <bounds x="368" y="288" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="336" y="320" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="399" y="288" w="11" h="32"/>
+            </attributes>
+          </decorator>
+          <decorator type="XOR_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="358" y="288" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <vertex id="T_1">
+          <iconpath>automatic.png</iconpath>
+          <attributes>
+            <bounds x="384" y="200" w="32" h="32"/>
+          </attributes>
+        </vertex>
+        <flow source="Check_for_Completeness" target="C_1">
+          <ports in="3" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Check_for_Completeness" target="C_2">
+          <ports in="3" out="11"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="InputCondition" target="Receive_Application">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="C_3" target="Check_for_Completeness">
+          <ports in="11" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Receive_Application" target="C">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="C" target="Check_for_Completeness">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="T_1" target="C_3">
+          <ports in="12" out="13"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="C_2" target="T_1">
+          <ports in="12" out="13"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+      </net>
+    </specification>
+  </layout>
+</specificationSet>
