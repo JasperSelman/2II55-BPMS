@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <specificationSet xmlns="http://www.yawlfoundation.org/yawlschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://www.yawlfoundation.org/yawlschema http://www.yawlfoundation.org/yawlschema/YAWL_Schema3.0.xsd">
-  <specification uri="langzaametool">
+  <specification uri="CreditApplication">
+    <documentation>No description provided</documentation>
     <metaData>
+      <title />
       <creator>s107333</creator>
       <description>No description provided</description>
       <version>0.1</version>
@@ -9,7 +11,28 @@
       <identifier>UID_8bbdf31b-4edb-4a0b-ae7a-2101b69d5eb0</identifier>
     </metaData>
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" />
-    <decomposition id="Net" isRootNet="true" xsi:type="NetFactsType">
+    <decomposition id="CreditApplication" isRootNet="true" xsi:type="NetFactsType">
+      <localVariable>
+        <index>0</index>
+        <name>completeApp</name>
+        <type>boolean</type>
+        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+        <initialValue>false</initialValue>
+      </localVariable>
+      <localVariable>
+        <index>1</index>
+        <name>decideApp</name>
+        <type>boolean</type>
+        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+        <initialValue>false</initialValue>
+      </localVariable>
+      <localVariable>
+        <index>2</index>
+        <name>loanAmt</name>
+        <type>double</type>
+        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+        <initialValue>0</initialValue>
+      </localVariable>
       <processControlElements>
         <inputCondition id="InputCondition">
           <flowsInto>
@@ -19,7 +42,7 @@
         <task id="Receive_Application">
           <name>Receive Application</name>
           <flowsInto>
-            <nextElementRef id="C" />
+            <nextElementRef id="C1" />
           </flowsInto>
           <join code="xor" />
           <split code="and" />
@@ -30,7 +53,8 @@
           </resourcing>
           <decomposesTo id="Begin_My_Career" />
         </task>
-        <condition id="C">
+        <condition id="C1">
+          <name>C1</name>
           <flowsInto>
             <nextElementRef id="Check_for_Completeness" />
           </flowsInto>
@@ -38,11 +62,11 @@
         <task id="Check_for_Completeness">
           <name>Check for Completeness</name>
           <flowsInto>
-            <nextElementRef id="C_1" />
+            <nextElementRef id="C4" />
             <predicate ordering="0">true()</predicate>
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="C_2" />
+            <nextElementRef id="C2" />
             <isDefaultFlow />
           </flowsInto>
           <join code="xor" />
@@ -54,15 +78,21 @@
           </resourcing>
           <decomposesTo id="Check_for_Completeness" />
         </task>
-        <condition id="C_1" />
-        <condition id="C_2">
+        <condition id="C2">
+          <name>C2</name>
           <flowsInto>
-            <nextElementRef id="T_1" />
+            <nextElementRef id="T" />
           </flowsInto>
         </condition>
-        <task id="T_1">
+        <condition id="C4">
+          <name>C4</name>
           <flowsInto>
-            <nextElementRef id="C_3" />
+            <nextElementRef id="check_loan_amount" />
+          </flowsInto>
+        </condition>
+        <task id="T">
+          <flowsInto>
+            <nextElementRef id="C3" />
           </flowsInto>
           <join code="xor" />
           <split code="and" />
@@ -72,11 +102,202 @@
             <start initiator="user" />
           </resourcing>
         </task>
-        <condition id="C_3">
+        <task id="check_loan_amount">
+          <name>check loan amount</name>
+          <flowsInto>
+            <nextElementRef id="C5" />
+            <predicate ordering="0">true()</predicate>
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="C7" />
+            <isDefaultFlow />
+          </flowsInto>
+          <join code="xor" />
+          <split code="xor" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
+        <condition id="C3">
+          <name>C3</name>
           <flowsInto>
             <nextElementRef id="Check_for_Completeness" />
           </flowsInto>
         </condition>
+        <condition id="C5">
+          <name>C5</name>
+          <flowsInto>
+            <nextElementRef id="perform_checks_for_large_amount" />
+          </flowsInto>
+        </condition>
+        <condition id="C7">
+          <name>C7</name>
+          <flowsInto>
+            <nextElementRef id="perform_checks_for_small_amount" />
+          </flowsInto>
+        </condition>
+        <task id="perform_checks_for_large_amount">
+          <name>perform checks for large amount</name>
+          <flowsInto>
+            <nextElementRef id="c6" />
+          </flowsInto>
+          <join code="xor" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
+        <task id="perform_checks_for_small_amount">
+          <name>perform checks for small amount</name>
+          <flowsInto>
+            <nextElementRef id="c8" />
+          </flowsInto>
+          <join code="xor" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
+        <condition id="c6">
+          <name>c6</name>
+          <flowsInto>
+            <nextElementRef id="make_decision" />
+          </flowsInto>
+        </condition>
+        <condition id="c8">
+          <name>c8</name>
+          <flowsInto>
+            <nextElementRef id="make_decision" />
+          </flowsInto>
+        </condition>
+        <task id="make_decision">
+          <name>make decision</name>
+          <flowsInto>
+            <nextElementRef id="c9" />
+            <predicate ordering="0">true()</predicate>
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="c10" />
+            <isDefaultFlow />
+          </flowsInto>
+          <join code="xor" />
+          <split code="xor" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
+        <condition id="c10">
+          <name>c10</name>
+          <flowsInto>
+            <nextElementRef id="notify_rejection" />
+          </flowsInto>
+        </condition>
+        <condition id="c9">
+          <name>c9</name>
+          <flowsInto>
+            <nextElementRef id="start_approval" />
+          </flowsInto>
+        </condition>
+        <task id="notify_rejection">
+          <name>notify rejection</name>
+          <flowsInto>
+            <nextElementRef id="OutputCondition" />
+          </flowsInto>
+          <join code="xor" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
+        <task id="start_approval">
+          <name>start approval</name>
+          <flowsInto>
+            <nextElementRef id="c11" />
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="c12" />
+          </flowsInto>
+          <join code="xor" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
+        <condition id="c11">
+          <name>c11</name>
+          <flowsInto>
+            <nextElementRef id="notify_acceptance" />
+          </flowsInto>
+        </condition>
+        <condition id="c12">
+          <name>c12</name>
+          <flowsInto>
+            <nextElementRef id="deliver_credit_card" />
+          </flowsInto>
+        </condition>
+        <task id="deliver_credit_card">
+          <name>deliver credit card</name>
+          <flowsInto>
+            <nextElementRef id="c14" />
+          </flowsInto>
+          <join code="xor" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
+        <task id="notify_acceptance">
+          <name>notify acceptance</name>
+          <flowsInto>
+            <nextElementRef id="c13" />
+          </flowsInto>
+          <join code="xor" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
+        <condition id="c13">
+          <name>c13</name>
+          <flowsInto>
+            <nextElementRef id="complete_approval" />
+          </flowsInto>
+        </condition>
+        <condition id="c14">
+          <name>c14</name>
+          <flowsInto>
+            <nextElementRef id="complete_approval" />
+          </flowsInto>
+        </condition>
+        <task id="complete_approval">
+          <name>complete approval</name>
+          <flowsInto>
+            <nextElementRef id="OutputCondition" />
+          </flowsInto>
+          <join code="and" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="user" />
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+        </task>
         <outputCondition id="OutputCondition" />
       </processControlElements>
     </decomposition>
@@ -90,36 +311,100 @@
     </decomposition>
   </specification>
   <layout>
-    <locale language="en" country="US"/>
-    <specification id="langzaametool">
+    <locale language="nl" country="NL"/>
+    <specification id="CreditApplication">
       <size w="58" h="28"/>
-      <net id="Net">
-        <bounds x="0" y="0" w="1364" h="495"/>
-        <frame x="0" y="0" w="1367" h="498"/>
-        <viewport x="0" y="0" w="1367" h="498"/>
-        <vertex id="C">
-          <attributes>
-            <bounds x="232" y="288" w="32" h="32"/>
-          </attributes>
-        </vertex>
-        <vertex id="C_1">
-          <attributes>
-            <bounds x="484" y="304" w="32" h="32"/>
-          </attributes>
-        </vertex>
-        <vertex id="C_3">
-          <attributes>
-            <bounds x="288" y="200" w="32" h="32"/>
-          </attributes>
-        </vertex>
-        <vertex id="C_2">
-          <attributes>
-            <bounds x="484" y="200" w="32" h="32"/>
-          </attributes>
-        </vertex>
+      <net id="CreditApplication">
+        <bounds x="-175" y="0" w="1524" h="512"/>
+        <frame x="0" y="0" w="651" h="498"/>
+        <viewport x="0" y="0" w="651" h="498"/>
+        <container id="C7">
+          <vertex>
+            <attributes>
+              <bounds x="624" y="400" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="592" y="432" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="C4">
+          <vertex>
+            <attributes>
+              <bounds x="416" y="296" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="384" y="328" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="C3">
+          <vertex>
+            <attributes>
+              <bounds x="216" y="200" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="184" y="232" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="C5">
+          <vertex>
+            <attributes>
+              <bounds x="616" y="196" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="584" y="228" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="c6">
+          <vertex>
+            <attributes>
+              <bounds x="816" y="196" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="784" y="228" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="c9">
+          <vertex>
+            <attributes>
+              <bounds x="980" y="260" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="948" y="292" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="c8">
+          <vertex>
+            <attributes>
+              <bounds x="824" y="400" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="792" y="432" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
         <vertex id="OutputCondition">
           <attributes>
-            <bounds x="576" y="304" w="32" h="32"/>
+            <bounds x="1.472" y="328" w="32" h="32"/>
           </attributes>
         </vertex>
         <vertex id="InputCondition">
@@ -127,16 +412,100 @@
             <bounds x="20" y="288" w="32" h="32"/>
           </attributes>
         </vertex>
-        <container id="Receive_Application">
+        <container id="C1">
           <vertex>
-            <iconpath>automatic.png</iconpath>
             <attributes>
-              <bounds x="128" y="288" w="32" h="32"/>
+              <bounds x="176" y="288" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="96" y="320" w="96" h="40"/>
+              <bounds x="144" y="320" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="c11">
+          <vertex>
+            <attributes>
+              <bounds x="1.172" y="224" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1.140" y="256" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="C2">
+          <vertex>
+            <attributes>
+              <bounds x="388" y="200" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="356" y="232" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="c10">
+          <vertex>
+            <attributes>
+              <bounds x="972" y="396" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="940" y="428" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="c13">
+          <vertex>
+            <attributes>
+              <bounds x="1.320" y="224" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1.288" y="256" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="c12">
+          <vertex>
+            <attributes>
+              <bounds x="1.176" y="328" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1.144" y="360" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="c14">
+          <vertex>
+            <attributes>
+              <bounds x="1.316" y="328" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1.284" y="360" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="notify_acceptance">
+          <vertex>
+            <iconpath>automatic.png</iconpath>
+            <attributes>
+              <bounds x="1.244" y="224" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1.212" y="256" w="96" h="40"/>
             </attributes>
           </label>
         </container>
@@ -144,43 +513,308 @@
           <vertex>
             <iconpath>manual.png</iconpath>
             <attributes>
-              <bounds x="368" y="288" w="32" h="32"/>
+              <bounds x="300" y="288" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="336" y="320" w="96" h="40"/>
+              <bounds x="268" y="320" w="97" h="41"/>
             </attributes>
           </label>
           <decorator type="XOR_split">
             <position>13</position>
             <attributes>
-              <bounds x="399" y="288" w="11" h="32"/>
+              <bounds x="331" y="288" w="11" h="32"/>
             </attributes>
           </decorator>
           <decorator type="XOR_join">
             <position>12</position>
             <attributes>
-              <bounds x="358" y="288" w="11" h="32"/>
+              <bounds x="290" y="288" w="11" h="32"/>
             </attributes>
           </decorator>
         </container>
-        <vertex id="T_1">
+        <container id="perform_checks_for_large_amount">
+          <vertex>
+            <iconpath>manual.png</iconpath>
+            <attributes>
+              <bounds x="720" y="196" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="688" y="228" w="96" h="60"/>
+            </attributes>
+          </label>
+        </container>
+        <vertex id="T">
           <iconpath>automatic.png</iconpath>
           <attributes>
-            <bounds x="384" y="200" w="32" h="32"/>
+            <bounds x="304" y="200" w="32" h="32"/>
           </attributes>
         </vertex>
-        <flow source="Check_for_Completeness" target="C_1">
+        <container id="deliver_credit_card">
+          <vertex>
+            <iconpath>manual.png</iconpath>
+            <attributes>
+              <bounds x="1.244" y="328" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1.212" y="360" w="96" h="40"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="complete_approval">
+          <vertex>
+            <iconpath>routingtask.png</iconpath>
+            <attributes>
+              <bounds x="1.396" y="268" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1.360" y="300" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="AND_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="1.386" y="268" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Receive_Application">
+          <vertex>
+            <iconpath>automatic.png</iconpath>
+            <attributes>
+              <bounds x="92" y="288" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="60" y="320" w="97" h="41"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="start_approval">
+          <vertex>
+            <iconpath>routingtask.png</iconpath>
+            <attributes>
+              <bounds x="1.056" y="260" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1.028" y="292" w="96" h="20"/>
+            </attributes>
+          </label>
+          <decorator type="AND_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="1.087" y="260" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="check_loan_amount">
+          <vertex>
+            <iconpath>manual.png</iconpath>
+            <attributes>
+              <bounds x="524" y="296" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="496" y="328" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="555" y="296" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="notify_rejection">
+          <vertex>
+            <iconpath>automatic.png</iconpath>
+            <attributes>
+              <bounds x="1.212" y="412" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1.180" y="444" w="96" h="20"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="make_decision">
+          <vertex>
+            <iconpath>manual.png</iconpath>
+            <attributes>
+              <bounds x="872" y="296" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="840" y="328" w="96" h="20"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="903" y="296" w="11" h="32"/>
+            </attributes>
+          </decorator>
+          <decorator type="XOR_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="862" y="296" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="perform_checks_for_small_amount">
+          <vertex>
+            <iconpath>manual.png</iconpath>
+            <attributes>
+              <bounds x="716" y="400" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="684" y="432" w="96" h="60"/>
+            </attributes>
+          </label>
+        </container>
+        <flow source="C5" target="perform_checks_for_large_amount">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="make_decision" target="c10">
+          <ports in="3" out="10"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="c9" target="start_approval">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="c12" target="deliver_credit_card">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="1.231" y="339,5"/>
+              <value x="1.252" y="347,5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="perform_checks_for_large_amount" target="c6">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="c8" target="make_decision">
+          <ports in="13" out="3"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="C4" target="check_loan_amount">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="start_approval" target="c12">
+          <ports in="4" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="start_approval" target="c11">
+          <ports in="2" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="T" target="C3">
+          <ports in="12" out="13"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="notify_rejection" target="OutputCondition">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="complete_approval" target="OutputCondition">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="C7" target="perform_checks_for_small_amount">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="check_loan_amount" target="C7">
           <ports in="3" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Check_for_Completeness" target="C_2">
-          <ports in="3" out="11"/>
+        <flow source="Receive_Application" target="C1">
+          <ports in="13" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="c13" target="complete_approval">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="1.351" y="247,5"/>
+              <value x="1.362" y="279,5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="check_loan_amount" target="C5">
+          <ports in="2" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="565" y="311,5"/>
+              <value x="680" y="259,5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="make_decision" target="c9">
+          <ports in="2" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="deliver_credit_card" target="c14">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="1.283" y="347,5"/>
+              <value x="1.332" y="351,5"/>
+            </points>
           </attributes>
         </flow>
         <flow source="InputCondition" target="Receive_Application">
@@ -189,31 +823,79 @@
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="C_3" target="Check_for_Completeness">
+        <flow source="c14" target="complete_approval">
+          <ports in="13" out="3"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="1.363" y="351,5"/>
+              <value x="1.362" y="287,25"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="C3" target="Check_for_Completeness">
           <ports in="11" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Receive_Application" target="C">
+        <flow source="c11" target="notify_acceptance">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="1.219" y="251,5"/>
+              <value x="1.248" y="227,5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="perform_checks_for_small_amount" target="c8">
           <ports in="13" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="C" target="Check_for_Completeness">
+        <flow source="c6" target="make_decision">
           <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="T_1" target="C_3">
-          <ports in="12" out="13"/>
+        <flow source="notify_acceptance" target="c13">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="1.279" y="227,5"/>
+              <value x="1.320" y="247,5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="C1" target="Check_for_Completeness">
+          <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="C_2" target="T_1">
+        <flow source="c10" target="notify_rejection">
+          <ports in="11" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Check_for_Completeness" target="C2">
+          <ports in="3" out="11"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Check_for_Completeness" target="C4">
+          <ports in="3" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="C2" target="T">
           <ports in="12" out="13"/>
           <attributes>
             <lineStyle>11</lineStyle>
