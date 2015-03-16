@@ -11,6 +11,19 @@
     </metaData>
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" />
     <decomposition id="Net" isRootNet="true" xsi:type="NetFactsType">
+      <localVariable>
+        <index>0</index>
+        <name>REQ_ID</name>
+        <type>ID</type>
+        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+        <initialValue />
+      </localVariable>
+      <localVariable>
+        <index>1</index>
+        <name>REQ_ON_TIME</name>
+        <type>boolean</type>
+        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+      </localVariable>
       <processControlElements>
         <inputCondition id="InputCondition">
           <flowsInto>
@@ -64,14 +77,14 @@
           <decomposesTo id="Gather_Standard_Forms" />
         </task>
         <task id="Request_On_Time">
-          <name>Request On Time</name>
+          <name>Request On Time?</name>
           <flowsInto>
-            <nextElementRef id="Add_Motivation_Letter_Request" />
+            <nextElementRef id="Gather_Additional_Forms_Optional" />
             <isDefaultFlow />
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="Gather_Additional_Forms_Optional" />
-            <predicate ordering="0">true()</predicate>
+            <nextElementRef id="Add_Motivation_Letter_Request" />
+            <predicate ordering="0">/Net/REQ_ON_TIME/false()</predicate>
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -140,12 +153,12 @@
         <task id="Check_if_forms_are_complete">
           <name>Check if forms are complete</name>
           <flowsInto>
-            <nextElementRef id="Dummy_State_" />
-            <isDefaultFlow />
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Forms_Complete_Dummy_State" />
             <predicate ordering="0">true()</predicate>
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Dummy_State" />
+            <isDefaultFlow />
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -156,16 +169,16 @@
           </resourcing>
           <decomposesTo id="Check_if_forms_are_complete" />
         </task>
-        <task id="Dummy_State_">
+        <task id="Dummy_State">
           <name>Dummy State</name>
+          <flowsInto>
+            <nextElementRef id="Financial_Prerequisites_Ok" />
+          </flowsInto>
           <flowsInto>
             <nextElementRef id="Motivation_letter_required" />
           </flowsInto>
           <flowsInto>
             <nextElementRef id="Prerequisites_Ok" />
-          </flowsInto>
-          <flowsInto>
-            <nextElementRef id="Financial_Prerequisites_Ok" />
           </flowsInto>
           <join code="xor" />
           <split code="and" />
@@ -178,12 +191,12 @@
         <task id="Financial_Prerequisites_Ok">
           <name>Financial Prerequisites Ok?</name>
           <flowsInto>
-            <nextElementRef id="Notify_student" />
-            <predicate ordering="0">true()</predicate>
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Check_join" />
             <isDefaultFlow />
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Notify_student" />
+            <predicate ordering="0">true()</predicate>
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -215,12 +228,12 @@
         <task id="Prerequisites_Ok">
           <name>Prerequisites Ok?</name>
           <flowsInto>
-            <nextElementRef id="Notify_student" />
-            <predicate ordering="0">true()</predicate>
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Check_join" />
             <isDefaultFlow />
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Notify_student" />
+            <predicate ordering="0">true()</predicate>
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -250,12 +263,12 @@
         <task id="Motivation_Ok">
           <name>Motivation Ok?</name>
           <flowsInto>
-            <nextElementRef id="Required_join" />
-            <isDefaultFlow />
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Notify_student" />
             <predicate ordering="0">true()</predicate>
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Required_join" />
+            <isDefaultFlow />
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -353,7 +366,7 @@
         <task id="Notify_Succesfull_registration">
           <name>Notify Succesfull registration</name>
           <flowsInto>
-            <nextElementRef id="Dummy_State_2" />
+            <nextElementRef id="Dummy_State_1" />
             <isDefaultFlow />
           </flowsInto>
           <join code="and" />
@@ -382,10 +395,10 @@
         <task id="Payment_via_bank_student">
           <name>Payment via bank student</name>
           <flowsInto>
-            <nextElementRef id="Offer_Payment_to_External_Service" />
+            <nextElementRef id="C" />
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="C" />
+            <nextElementRef id="Offer_Payment_to_External_Service" />
           </flowsInto>
           <join code="and" />
           <split code="and" />
@@ -409,7 +422,7 @@
           </resourcing>
           <decomposesTo id="Register_Student_At_Department" />
         </task>
-        <task id="Dummy_State_2">
+        <task id="Dummy_State_1">
           <name>Dummy State 2</name>
           <flowsInto>
             <nextElementRef id="OutputCondition" />
@@ -508,7 +521,7 @@
         <task id="Pick_up_Laptop">
           <name>Pick up Laptop</name>
           <flowsInto>
-            <nextElementRef id="Dummy_State_2" />
+            <nextElementRef id="Dummy_State_1" />
           </flowsInto>
           <join code="xor" />
           <split code="and" />
@@ -584,6 +597,19 @@
     </decomposition>
     <decomposition id="Register_Request" xsi:type="WebServiceGatewayFactsType">
       <name>Register Request</name>
+      <inputParam>
+        <index>1</index>
+        <name>REQ_ON_TIME</name>
+        <type>boolean</type>
+        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+      </inputParam>
+      <outputParam>
+        <index>0</index>
+        <name>REQ_ID</name>
+        <type>ID</type>
+        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+        <defaultValue />
+      </outputParam>
       <externalInteraction>manual</externalInteraction>
     </decomposition>
     <decomposition id="Register_Student" xsi:type="WebServiceGatewayFactsType">
@@ -604,9 +630,9 @@
     <specification id="Stu_Assignment">
       <size w="58" h="28"/>
       <net id="Net">
-        <bounds x="-1363" y="-122" w="2712" h="788"/>
-        <frame x="0" y="0" w="1367" h="510"/>
-        <viewport x="0" y="0" w="1367" h="510"/>
+        <bounds x="0" y="0" w="2712" h="788"/>
+        <frame x="0" y="0" w="1367" h="680"/>
+        <viewport x="0" y="0" w="1367" h="680"/>
         <vertex id="OutputCondition">
           <attributes>
             <bounds x="2,660" y="380" w="32" h="32"/>
@@ -637,24 +663,6 @@
             <position>13</position>
             <attributes>
               <bounds x="1,311" y="236" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Dummy_State_">
-          <vertex>
-            <attributes>
-              <bounds x="1,088" y="236" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="1,060" y="268" w="96" h="20"/>
-            </attributes>
-          </label>
-          <decorator type="AND_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="1,119" y="236" w="11" h="32"/>
             </attributes>
           </decorator>
         </container>
@@ -886,7 +894,7 @@
             </attributes>
           </decorator>
         </container>
-        <container id="Dummy_State_2">
+        <container id="Dummy_State_1">
           <vertex>
             <attributes>
               <bounds x="2,536" y="380" w="32" h="32"/>
@@ -901,6 +909,24 @@
             <position>12</position>
             <attributes>
               <bounds x="2,526" y="380" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Dummy_State">
+          <vertex>
+            <attributes>
+              <bounds x="1,088" y="236" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,060" y="268" w="96" h="20"/>
+            </attributes>
+          </label>
+          <decorator type="AND_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="1,119" y="236" w="11" h="32"/>
             </attributes>
           </decorator>
         </container>
@@ -988,18 +1014,6 @@
             </attributes>
           </decorator>
         </container>
-        <container id="Gather_Standard_Forms">
-          <vertex>
-            <attributes>
-              <bounds x="400" y="236" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="368" y="268" w="96" h="40"/>
-            </attributes>
-          </label>
-        </container>
         <container id="Register_Student_At_Department">
           <vertex>
             <attributes>
@@ -1009,6 +1023,18 @@
           <label>
             <attributes>
               <bounds x="1,948" y="168" w="96" h="60"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="Gather_Standard_Forms">
+          <vertex>
+            <attributes>
+              <bounds x="400" y="236" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="368" y="268" w="96" h="40"/>
             </attributes>
           </label>
         </container>
@@ -1156,7 +1182,7 @@
             </attributes>
           </decorator>
         </container>
-        <flow source="Pick_up_Laptop" target="Dummy_State_2">
+        <flow source="Pick_up_Laptop" target="Dummy_State_1">
           <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
@@ -1193,12 +1219,6 @@
             </points>
           </attributes>
         </flow>
-        <flow source="Dummy_State_" target="Financial_Prerequisites_Ok">
-          <ports in="3" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
         <flow source="Motivation_Ok" target="Required_join">
           <label>Yes</label>
           <ports in="3" out="3"/>
@@ -1210,6 +1230,12 @@
               <value x="1,325" y="515.25"/>
               <value x="1,406" y="519.25"/>
             </points>
+          </attributes>
+        </flow>
+        <flow source="Dummy_State" target="Motivation_letter_required">
+          <ports in="4" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
           </attributes>
         </flow>
         <flow source="Motivation_Ok" target="Notify_student">
@@ -1252,12 +1278,6 @@
             </points>
           </attributes>
         </flow>
-        <flow source="Add_notebook_to_Bulk_order" target="Notebook_arrives">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
         <flow source="Notify_student" target="OutputCondition">
           <ports in="13" out="12"/>
           <attributes>
@@ -1279,6 +1299,12 @@
             </points>
           </attributes>
         </flow>
+        <flow source="Add_notebook_to_Bulk_order" target="Notebook_arrives">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
         <flow source="Check_join" target="Register_Student">
           <ports in="3" out="12"/>
           <attributes>
@@ -1297,18 +1323,6 @@
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Check_if_forms_are_complete" target="Dummy_State_">
-          <label>Yes</label>
-          <ports in="2" out="12"/>
-          <attributes>
-            <labelposition x="514" y="-13"/>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="981" y="251.5"/>
-              <value x="1,088" y="251.5"/>
-            </points>
-          </attributes>
-        </flow>
         <flow source="Payment_Succesfull" target="Pick_up_Laptop">
           <label>Yes</label>
           <ports in="2" out="4"/>
@@ -1320,19 +1334,6 @@
               <value x="2,421" y="387.5"/>
               <value x="2,468" y="428"/>
               <value x="2,439" y="492"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Financial_Prerequisites_Ok" target="Notify_student">
-          <label>No</label>
-          <ports in="3" out="1"/>
-          <attributes>
-            <labelposition x="483" y="-14"/>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="1,321" y="395.25"/>
-              <value x="1,476" y="480"/>
-              <value x="1,574" y="607.75"/>
             </points>
           </attributes>
         </flow>
@@ -1349,10 +1350,17 @@
             </points>
           </attributes>
         </flow>
-        <flow source="Dummy_State_" target="Prerequisites_Ok">
-          <ports in="2" out="12"/>
+        <flow source="Financial_Prerequisites_Ok" target="Notify_student">
+          <label>No</label>
+          <ports in="3" out="1"/>
           <attributes>
-            <lineStyle>11</lineStyle>
+            <labelposition x="483" y="-14"/>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="1,321" y="395.25"/>
+              <value x="1,476" y="480"/>
+              <value x="1,574" y="607.75"/>
+            </points>
           </attributes>
         </flow>
         <flow source="C" target="Notify_Succesfull_registration">
@@ -1373,14 +1381,20 @@
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
+        <flow source="Gather_Additional_Forms_Optional" target="Send_enrollment_package">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
         <flow source="Register_Student_At_Department" target="Notify_Succesfull_registration">
           <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Gather_Additional_Forms_Optional" target="Send_enrollment_package">
-          <ports in="13" out="2"/>
+        <flow source="Dummy_State" target="Financial_Prerequisites_Ok">
+          <ports in="3" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
@@ -1398,14 +1412,14 @@
             </points>
           </attributes>
         </flow>
-        <flow source="Order_Seperate_notebook" target="Notebook_arrives">
-          <ports in="13" out="2"/>
+        <flow source="Register_Student" target="Register_Student_At_Department">
+          <ports in="2" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Register_Student" target="Register_Student_At_Department">
-          <ports in="2" out="12"/>
+        <flow source="Order_Seperate_notebook" target="Notebook_arrives">
+          <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
@@ -1459,13 +1473,7 @@
             </points>
           </attributes>
         </flow>
-        <flow source="C" target="Payment_via_bank_student">
-          <ports in="11" out="3"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Notify_Succesfull_registration" target="Dummy_State_2">
+        <flow source="Notify_Succesfull_registration" target="Dummy_State_1">
           <ports in="13" out="2"/>
           <attributes>
             <lineStyle>12</lineStyle>
@@ -1474,6 +1482,12 @@
               <value x="2,452" y="212"/>
               <value x="2,526" y="395.5"/>
             </points>
+          </attributes>
+        </flow>
+        <flow source="C" target="Payment_via_bank_student">
+          <ports in="11" out="3"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
           </attributes>
         </flow>
         <flow source="Register_Student" target="C">
@@ -1515,16 +1529,6 @@
             </points>
           </attributes>
         </flow>
-        <flow source="Dummy_State_2" target="OutputCondition">
-          <ports in="13" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="2,587" y="371.5"/>
-              <value x="2,660" y="395.5"/>
-            </points>
-          </attributes>
-        </flow>
         <flow source="InputCondition" target="Register_Request">
           <ports in="13" out="12"/>
           <attributes>
@@ -1544,6 +1548,12 @@
             </points>
           </attributes>
         </flow>
+        <flow source="Forms_Complete_Dummy_State" target="Gather_Standard_Forms">
+          <ports in="2" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
         <flow source="Request_on_Time" target="Order_Seperate_notebook">
           <label>No</label>
           <ports in="3" out="12"/>
@@ -1556,16 +1566,22 @@
             </points>
           </attributes>
         </flow>
-        <flow source="Forms_Complete_Dummy_State" target="Gather_Standard_Forms">
-          <ports in="2" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
         <flow source="Add_Motivation_Letter_Request" target="Gather_Additional_Forms_Optional">
           <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Check_if_forms_are_complete" target="Dummy_State">
+          <label>Yes</label>
+          <ports in="2" out="12"/>
+          <attributes>
+            <labelposition x="514" y="-13"/>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="981" y="251.5"/>
+              <value x="1,088" y="251.5"/>
+            </points>
           </attributes>
         </flow>
         <flow source="Prerequisites_Ok" target="Notify_student">
@@ -1593,10 +1609,20 @@
             </points>
           </attributes>
         </flow>
-        <flow source="Dummy_State_" target="Motivation_letter_required">
-          <ports in="4" out="12"/>
+        <flow source="Dummy_State" target="Prerequisites_Ok">
+          <ports in="2" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Dummy_State_1" target="OutputCondition">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="2,587" y="371.5"/>
+              <value x="2,660" y="395.5"/>
+            </points>
           </attributes>
         </flow>
       </net>
