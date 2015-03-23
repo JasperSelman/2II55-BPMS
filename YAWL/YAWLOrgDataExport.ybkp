@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<orgdata>
+  <participants>
+    <participant id="PA-0d776052-2dad-43c7-85c3-17bcf8c3fe6f">
+      <userid>FDE</userid>
+      <password>vZHwFhtweq7a9vBlADJa5JwF4BA=</password>
+      <firstname>John Doe</firstname>
+      <lastname>FDE</lastname>
+      <description>John Doe who works as a financial departmental employee</description>
+      <notes/>
+      <isAdministrator>false</isAdministrator>
+      <roles>
+        <role>RO-0626d16e-964a-455b-8003-9cb76d0fbf1f</role>
+      </roles>
+      <positions/>
+      <capabilities/>
+      <privileges>00000000</privileges>
+    </participant>
+    <participant id="PA-e810b2d4-7005-437f-9e55-32a3b319d2cd">
+      <userid>DSAE</userid>
+      <password>mDUhBV7XzlINT401VPYgR334WS0=</password>
+      <firstname>John Doe</firstname>
+      <lastname>DSAE</lastname>
+      <description>John Doe who works as a departmental student administration employee</description>
+      <notes/>
+      <isAdministrator>false</isAdministrator>
+      <roles>
+        <role>RO-ab672900-fc63-42b7-ac78-717b8233a27b</role>
+      </roles>
+      <positions/>
+      <capabilities/>
+      <privileges>00000000</privileges>
+    </participant>
+    <participant id="PA-bb98ddcd-91c6-46ac-aee8-4b1766c080d2">
+      <userid>DEBE</userid>
+      <password>OtVZCIodoaVZ9mcoT17Y4hoElZg=</password>
+      <firstname>John Doe</firstname>
+      <lastname>DEBE</lastname>
+      <description>John Doe who works as a departmental executive board employee</description>
+      <notes/>
+      <isAdministrator>false</isAdministrator>
+      <roles>
+        <role>RO-ec7de57d-4312-4cad-832e-aa0a3f719d64</role>
+      </roles>
+      <positions/>
+      <capabilities/>
+      <privileges>00000000</privileges>
+    </participant>
+    <participant id="PA-b58e4c52-361f-4511-9dde-ec0c3b6dd042">
+      <userid>MDE</userid>
+      <password>kjecu47PaWGUtHthmofp5PmnXbI=</password>
+      <firstname>John Doe</firstname>
+      <lastname>MDE</lastname>
+      <description>John Doe who works as a mail department employee</description>
+      <notes/>
+      <isAdministrator>false</isAdministrator>
+      <roles>
+        <role>RO-2bc02896-e76d-4362-817b-249c2b15d9be</role>
+      </roles>
+      <positions/>
+      <capabilities/>
+      <privileges>00000000</privileges>
+    </participant>
+    <participant id="PA-97160bee-65ff-4919-bd50-ce102c8c400c">
+      <userid>AE</userid>
+      <password>uL49EmQxDDuMhI1LkNUgYXmkDMQ=</password>
+      <firstname>John Doe</firstname>
+      <lastname>AE</lastname>
+      <description>John Doe who works as a administration employee</description>
+      <notes/>
+      <isAdministrator>false</isAdministrator>
+      <roles>
+        <role>RO-167ab9a4-35b7-472b-a6aa-f86f0e82fefb</role>
+      </roles>
+      <positions/>
+      <capabilities/>
+      <privileges>00000000</privileges>
+    </participant>
+    <participant id="PA-e253603b-c1a8-4739-b12e-0cf2860021e1">
+      <userid>NSC</userid>
+      <password>AsnjFx5ZOEZbx/omOLogntMp7Xw=</password>
+      <firstname>John Doe</firstname>
+      <lastname>NSC</lastname>
+      <description>John Doe who works at the NSC</description>
+      <notes/>
+      <isAdministrator>false</isAdministrator>
+      <roles>
+        <role>RO-cf5aa720-15dc-44ad-ab60-33873ed75212</role>
+      </roles>
+      <positions/>
+      <capabilities/>
+      <privileges>00000000</privileges>
+    </participant>
+  </participants>
+  <roles>
+    <role id="RO-167ab9a4-35b7-472b-a6aa-f86f0e82fefb">
+      <name>Administrative Employee</name>
+      <description/>
+      <notes/>
+    </role>
+    <role id="RO-ec7de57d-4312-4cad-832e-aa0a3f719d64">
+      <name>Departmental Executive Board Employee</name>
+      <description/>
+      <notes/>
+    </role>
+    <role id="RO-ab672900-fc63-42b7-ac78-717b8233a27b">
+      <name>Departmental Student Administration Employee</name>
+      <description/>
+      <notes/>
+    </role>
+    <role id="RO-0626d16e-964a-455b-8003-9cb76d0fbf1f">
+      <name>Financial Department Employee</name>
+      <description/>
+      <notes/>
+    </role>
+    <role id="RO-2bc02896-e76d-4362-817b-249c2b15d9be">
+      <name>Mail Department Employee</name>
+      <description/>
+      <notes/>
+    </role>
+    <role id="RO-cf5aa720-15dc-44ad-ab60-33873ed75212">
+      <name>NSC Employee</name>
+      <description/>
+      <notes/>
+    </role>
+  </roles>
+  <positions/>
+  <capabilities/>
+  <orggroups/>
+  <nonhumanresources/>
+  <nonhumancategories/>
+</orgdata>
+
