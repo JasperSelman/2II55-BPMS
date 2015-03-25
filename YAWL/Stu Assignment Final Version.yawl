@@ -46,38 +46,45 @@
       </localVariable>
       <localVariable>
         <index>3</index>
-        <name>complete</name>
-        <type>boolean</type>
+        <name>payment_status</name>
+        <type>int</type>
         <namespace>http://www.w3.org/2001/XMLSchema</namespace>
-        <initialValue>false</initialValue>
+        <initialValue>0</initialValue>
       </localVariable>
       <localVariable>
         <index>4</index>
-        <name>check_prereq_ok</name>
+        <name>REPLY_ON_TIME</name>
         <type>boolean</type>
         <namespace>http://www.w3.org/2001/XMLSchema</namespace>
         <initialValue>false</initialValue>
       </localVariable>
       <localVariable>
         <index>5</index>
-        <name>check_finan_ok</name>
+        <name>FORMS_COMPLETE</name>
         <type>boolean</type>
         <namespace>http://www.w3.org/2001/XMLSchema</namespace>
         <initialValue>false</initialValue>
       </localVariable>
       <localVariable>
         <index>6</index>
-        <name>check_mot_ok</name>
+        <name>F_PREREQ_OK</name>
         <type>boolean</type>
         <namespace>http://www.w3.org/2001/XMLSchema</namespace>
         <initialValue>false</initialValue>
       </localVariable>
       <localVariable>
         <index>7</index>
-        <name>payment_status</name>
-        <type>int</type>
+        <name>PREREQ_OK</name>
+        <type>boolean</type>
         <namespace>http://www.w3.org/2001/XMLSchema</namespace>
-        <initialValue>0</initialValue>
+        <initialValue>false</initialValue>
+      </localVariable>
+      <localVariable>
+        <index>8</index>
+        <name>MOTIV_OK</name>
+        <type>boolean</type>
+        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+        <initialValue>false</initialValue>
       </localVariable>
       <processControlElements>
         <inputCondition id="InputCondition">
@@ -125,12 +132,12 @@
         <task id="Forms_Complete_Dummy_State">
           <name>Forms Complete Dummy State</name>
           <flowsInto>
-            <nextElementRef id="Request_On_Time" />
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Gather_Standard_Forms" />
           </flowsInto>
-          <join code="xor" />
+          <flowsInto>
+            <nextElementRef id="Request_On_Time" />
+          </flowsInto>
+          <join code="and" />
           <split code="and" />
           <resourcing>
             <offer initiator="user" />
@@ -163,12 +170,12 @@
         <task id="Request_On_Time">
           <name>Request On Time?</name>
           <flowsInto>
-            <nextElementRef id="Gather_Additional_Forms_Optional" />
-            <predicate ordering="0">/Net/REQ_ON_TIME/text() = true()</predicate>
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Add_Motivation_Letter_Request" />
             <isDefaultFlow />
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Gather_Additional_Forms_Optional" />
+            <predicate ordering="0">/Net/REQ_ON_TIME/text() = true()</predicate>
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -237,15 +244,21 @@
         <task id="Wait_for_forms_to_be_filled_out">
           <name>Wait for forms to be filled out</name>
           <flowsInto>
-            <nextElementRef id="OutputCondition" />
-            <predicate ordering="0">false()</predicate>
+            <nextElementRef id="Check_if_IBAN_is_valid" />
+            <predicate ordering="0">boolean(/Net/REPLY_ON_TIME/text()='true')</predicate>
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="Check_if_IBAN_is_valid" />
+            <nextElementRef id="OutputCondition" />
             <isDefaultFlow />
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
+          <completedMappings>
+            <mapping>
+              <expression query="&lt;REPLY_ON_TIME&gt;{/Wait_for_forms_to_be_filled_out/REPLY_ON_TIME/text()}&lt;/REPLY_ON_TIME&gt;" />
+              <mapsTo>REPLY_ON_TIME</mapsTo>
+            </mapping>
+          </completedMappings>
           <resourcing>
             <offer initiator="system">
               <distributionSet>
@@ -262,12 +275,12 @@
         <task id="Check_if_IBAN_is_valid">
           <name>Check if IBAN is valid</name>
           <flowsInto>
-            <nextElementRef id="Register_Request" />
-            <isDefaultFlow />
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Check_if_forms_are_complete" />
             <predicate ordering="0">boolean(/Net/iban_valid/text()='true')</predicate>
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Register_Request" />
+            <isDefaultFlow />
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -300,18 +313,18 @@
           <name>Check if forms are complete</name>
           <flowsInto>
             <nextElementRef id="Dummy_State" />
-            <predicate ordering="0">boolean(/Net/complete/text()='true')</predicate>
+            <predicate ordering="0">boolean(/Net/FORMS_COMPLETE/text()='true')</predicate>
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="Forms_Complete_Dummy_State" />
+            <nextElementRef id="Register_Request" />
             <isDefaultFlow />
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
           <completedMappings>
             <mapping>
-              <expression query="&lt;complete&gt;{boolean(/Check_if_forms_are_complete/FORMS_COMPLETE)}&lt;/complete&gt;" />
-              <mapsTo>complete</mapsTo>
+              <expression query="&lt;FORMS_COMPLETE&gt;{/Check_if_forms_are_complete/FORMS_COMPLETE/text()}&lt;/FORMS_COMPLETE&gt;" />
+              <mapsTo>FORMS_COMPLETE</mapsTo>
             </mapping>
           </completedMappings>
           <resourcing>
@@ -330,13 +343,13 @@
         <task id="Dummy_State">
           <name>Dummy State</name>
           <flowsInto>
-            <nextElementRef id="Prerequisites_Ok" />
+            <nextElementRef id="Financial_Prerequisites_Ok" />
           </flowsInto>
           <flowsInto>
             <nextElementRef id="Motivation_letter_required" />
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="Financial_Prerequisites_Ok" />
+            <nextElementRef id="Prerequisites_Ok" />
           </flowsInto>
           <join code="xor" />
           <split code="and" />
@@ -350,7 +363,7 @@
           <name>Financial Prerequisites Ok?</name>
           <flowsInto>
             <nextElementRef id="Check_join" />
-            <predicate ordering="0">boolean(/Net/check_finan_ok/text()='true')</predicate>
+            <predicate ordering="0">boolean(/Net/F_PREREQ_OK/text()='true')</predicate>
           </flowsInto>
           <flowsInto>
             <nextElementRef id="Notify_student" />
@@ -360,8 +373,8 @@
           <split code="xor" />
           <completedMappings>
             <mapping>
-              <expression query="&lt;check_finan_ok&gt;{boolean(Financial_Prerequisites_Ok/F_PREREQ_OK)}&lt;/check_finan_ok&gt;" />
-              <mapsTo>check_finan_ok</mapsTo>
+              <expression query="&lt;F_PREREQ_OK&gt;{/Financial_Prerequisites_Ok/F_PREREQ_OK/text()}&lt;/F_PREREQ_OK&gt;" />
+              <mapsTo>F_PREREQ_OK</mapsTo>
             </mapping>
           </completedMappings>
           <resourcing>
@@ -400,7 +413,7 @@
           <name>Prerequisites Ok?</name>
           <flowsInto>
             <nextElementRef id="Check_join" />
-            <predicate ordering="0">boolean(/Net/check_prereq_ok/text()='true')</predicate>
+            <predicate ordering="0">boolean(/Net/PREREQ_OK/text()='true')</predicate>
           </flowsInto>
           <flowsInto>
             <nextElementRef id="Notify_student" />
@@ -410,8 +423,8 @@
           <split code="xor" />
           <completedMappings>
             <mapping>
-              <expression query="&lt;check_prereq_ok&gt;{boolean(/Prerequisites_Ok/PREREQ_OK)}&lt;/check_prereq_ok&gt;" />
-              <mapsTo>check_prereq_ok</mapsTo>
+              <expression query="&lt;PREREQ_OK&gt;{/Prerequisites_Ok/PREREQ_OK/text()}&lt;/PREREQ_OK&gt;" />
+              <mapsTo>PREREQ_OK</mapsTo>
             </mapping>
           </completedMappings>
           <resourcing>
@@ -445,19 +458,19 @@
         <task id="Motivation_Ok">
           <name>Motivation Ok?</name>
           <flowsInto>
-            <nextElementRef id="Required_join" />
-            <predicate ordering="0">boolean(/Net/check_mot_ok/text()='true')</predicate>
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Notify_student" />
             <isDefaultFlow />
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Required_join" />
+            <predicate ordering="0">boolean(/Net/MOTIV_OK/text()='true')</predicate>
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
           <completedMappings>
             <mapping>
-              <expression query="&lt;check_mot_ok&gt;{boolean(/Motivation_Ok/MOTIV_OK)}&lt;/check_mot_ok&gt;" />
-              <mapsTo>check_mot_ok</mapsTo>
+              <expression query="&lt;MOTIV_OK&gt;{/Motivation_Ok/MOTIV_OK/text()}&lt;/MOTIV_OK&gt;" />
+              <mapsTo>MOTIV_OK</mapsTo>
             </mapping>
           </completedMappings>
           <resourcing>
@@ -569,12 +582,12 @@
         <task id="Student_wants_to_pay_in_Cash">
           <name>Student wants to pay in Cash?</name>
           <flowsInto>
-            <nextElementRef id="Dummy_State_1" />
-            <predicate ordering="0">/Net/APPLICATION/PayCash/true()</predicate>
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Wait_for_Notebook_to_arrive_1" />
             <isDefaultFlow />
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Dummy_State_1" />
+            <predicate ordering="0">/Net/APPLICATION/PayCash/true()</predicate>
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -672,10 +685,10 @@
         </task>
         <condition id="C">
           <flowsInto>
-            <nextElementRef id="Notify_Succesfull_registration" />
+            <nextElementRef id="Payment_via_bank_student" />
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="Payment_via_bank_student" />
+            <nextElementRef id="Notify_Succesfull_registration" />
           </flowsInto>
         </condition>
         <task id="Notebook_arrives">
@@ -801,27 +814,27 @@
         <task id="Payment_Succesfull">
           <name>Payment Succesfull?</name>
           <flowsInto>
-            <nextElementRef id="Pick_up_Laptop" />
-            <isDefaultFlow />
+            <nextElementRef id="Pay_Laptop_in_Cash" />
+            <predicate ordering="1">/Net/payment_status = 1</predicate>
           </flowsInto>
           <flowsInto>
             <nextElementRef id="Offer_Payment_to_External_Service" />
             <predicate ordering="0">/Net/payment_status = 2</predicate>
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="Pay_Laptop_in_Cash" />
-            <predicate ordering="1">/Net/payment_status = 1</predicate>
+            <nextElementRef id="Pick_up_Laptop" />
+            <isDefaultFlow />
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
           <startingMappings>
             <mapping>
-              <expression query="&lt;payment_amount&gt;{1800}&lt;/payment_amount&gt;" />
-              <mapsTo>payment_amount</mapsTo>
-            </mapping>
-            <mapping>
               <expression query="&lt;payment_iban&gt;{//APPLICATION/IBAN/text()}&lt;/payment_iban&gt;" />
               <mapsTo>payment_iban</mapsTo>
+            </mapping>
+            <mapping>
+              <expression query="&lt;payment_amount&gt;{1800}&lt;/payment_amount&gt;" />
+              <mapsTo>payment_amount</mapsTo>
             </mapping>
           </startingMappings>
           <completedMappings>
@@ -1090,22 +1103,17 @@
     </decomposition>
   </specification>
   <layout>
-    <locale language="nl" country="NL"/>
+    <locale language="en" country="US"/>
     <specification id="Stu_Assignment">
       <size w="58" h="28"/>
       <net id="Net">
-        <bounds x="-355" y="0" w="2039" h="671"/>
-        <frame x="0" y="0" w="1687" h="689"/>
-        <viewport x="0" y="0" w="1687" h="689"/>
+        <bounds x="-101" y="0" w="2039" h="520"/>
+        <frame x="0" y="0" w="1367" h="538"/>
+        <viewport x="0" y="0" w="1367" h="538"/>
         <scale>0.6666666666666666</scale>
-        <vertex id="C">
-          <attributes>
-            <bounds x="2.320" y="308" w="32" h="32"/>
-          </attributes>
-        </vertex>
         <vertex id="OutputCondition">
           <attributes>
-            <bounds x="2.996" y="404" w="32" h="32"/>
+            <bounds x="2,996" y="404" w="32" h="32"/>
           </attributes>
         </vertex>
         <vertex id="InputCondition">
@@ -1113,137 +1121,196 @@
             <bounds x="32" y="312" w="32" h="32"/>
           </attributes>
         </vertex>
-        <container id="Order_Seperate_notebook">
+        <vertex id="C">
+          <attributes>
+            <bounds x="2,320" y="308" w="32" h="32"/>
+          </attributes>
+        </vertex>
+        <container id="Prerequisites_Ok">
           <vertex>
             <attributes>
-              <bounds x="1.859" y="367" w="33" h="32"/>
+              <bounds x="1,280" y="236" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="1.827" y="400" w="96" h="40"/>
+              <bounds x="1,252" y="268" w="96" h="40"/>
             </attributes>
           </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="1,311" y="236" w="11" h="32"/>
+            </attributes>
+          </decorator>
         </container>
-        <container id="Pay_Laptop_in_Cash">
+        <container id="Payment_via_bank_student">
           <vertex>
             <attributes>
-              <bounds x="2.644" y="516" w="32" h="32"/>
+              <bounds x="2,488" y="368" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="2.608" y="549" w="96" h="40"/>
+              <bounds x="2,451" y="400" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="AND_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="2,478" y="368" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Pick_up_Laptop">
+          <vertex>
+            <attributes>
+              <bounds x="2,780" y="516" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="2,744" y="549" w="96" h="20"/>
             </attributes>
           </label>
           <decorator type="XOR_join">
             <position>12</position>
             <attributes>
-              <bounds x="2.634" y="516" w="11" h="32"/>
+              <bounds x="2,770" y="516" w="11" h="32"/>
             </attributes>
           </decorator>
         </container>
-        <container id="Prerequisites_Ok">
+        <container id="Check_if_forms_are_complete">
           <vertex>
             <attributes>
-              <bounds x="1.280" y="236" w="32" h="32"/>
+              <bounds x="940" y="236" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="1.252" y="268" w="96" h="40"/>
+              <bounds x="912" y="268" w="96" h="40"/>
             </attributes>
           </label>
           <decorator type="XOR_split">
             <position>13</position>
             <attributes>
-              <bounds x="1.311" y="236" w="11" h="32"/>
+              <bounds x="971" y="236" w="11" h="32"/>
             </attributes>
           </decorator>
         </container>
-        <container id="Notebook_arrives_1">
+        <container id="Send_enrollment_package">
           <vertex>
             <attributes>
-              <bounds x="2.187" y="531" w="32" h="32"/>
+              <bounds x="636" y="236" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="2.160" y="564" w="96" h="40"/>
-            </attributes>
-          </label>
-          <decorator type="AND_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="2.218" y="531" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Register_Student_At_Department">
-          <vertex>
-            <attributes>
-              <bounds x="2.316" y="160" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.285" y="192" w="96" h="60"/>
-            </attributes>
-          </label>
-        </container>
-        <container id="Financial_Prerequisites_Ok">
-          <vertex>
-            <attributes>
-              <bounds x="1.280" y="372" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="1.252" y="404" w="96" h="60"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="1.311" y="372" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Notify_Succesfull_registration">
-          <vertex>
-            <attributes>
-              <bounds x="2.492" y="160" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.456" y="192" w="96" h="60"/>
+              <bounds x="600" y="268" w="96" h="60"/>
             </attributes>
           </label>
           <decorator type="AND_join">
             <position>12</position>
             <attributes>
-              <bounds x="2.482" y="160" w="11" h="32"/>
+              <bounds x="626" y="236" w="11" h="32"/>
             </attributes>
           </decorator>
+        </container>
+        <container id="Wait_for_forms_to_be_filled_out">
+          <vertex>
+            <attributes>
+              <bounds x="715" y="236" w="34" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="688" y="269" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="746" y="236" w="13" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Add_Motivation_Letter_Request">
+          <vertex>
+            <attributes>
+              <bounds x="448" y="500" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="416" y="532" w="96" h="40"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="Notebook_arrives">
+          <vertex>
+            <attributes>
+              <bounds x="2,288" y="368" w="32" h="33"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="2,256" y="400" w="96" h="40"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="Wait_for_Notebook_to_arrive_1">
+          <vertex>
+            <attributes>
+              <bounds x="2,098" y="530" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="2,068" y="564" w="96" h="60"/>
+            </attributes>
+          </label>
         </container>
         <container id="Check_join">
           <vertex>
             <attributes>
-              <bounds x="1.620" y="368" w="32" h="32"/>
+              <bounds x="1,620" y="368" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="1.584" y="400" w="96" h="20"/>
+              <bounds x="1,584" y="400" w="96" h="20"/>
             </attributes>
           </label>
           <decorator type="AND_join">
             <position>12</position>
             <attributes>
-              <bounds x="1.610" y="368" w="11" h="32"/>
+              <bounds x="1,610" y="368" w="11" h="32"/>
             </attributes>
           </decorator>
+        </container>
+        <container id="Order_Seperate_notebook">
+          <vertex>
+            <attributes>
+              <bounds x="1,859" y="367" w="33" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,827" y="400" w="96" h="40"/>
+            </attributes>
+          </label>
+        </container>
+        <container id="Add_notebook_to_Bulk_order">
+          <vertex>
+            <attributes>
+              <bounds x="1,859" y="496" w="33" h="33"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,829" y="528" w="96" h="40"/>
+            </attributes>
+          </label>
         </container>
         <container id="Register_Request">
           <vertex>
@@ -1266,14 +1333,68 @@
         <container id="Wait_for_Notebook_to_arrive">
           <vertex>
             <attributes>
-              <bounds x="2.195" y="366" w="33" h="33"/>
+              <bounds x="2,195" y="366" w="33" h="33"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="2.160" y="396" w="96" h="60"/>
+              <bounds x="2,160" y="396" w="96" h="60"/>
             </attributes>
           </label>
+        </container>
+        <container id="Financial_Prerequisites_Ok">
+          <vertex>
+            <attributes>
+              <bounds x="1,280" y="372" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,252" y="404" w="96" h="60"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="1,311" y="372" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Offer_Payment_to_External_Service">
+          <vertex>
+            <attributes>
+              <bounds x="2,596" y="368" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="2,560" y="400" w="96" h="60"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="2,586" y="368" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Gather_Additional_Forms_Optional">
+          <vertex>
+            <attributes>
+              <bounds x="528" y="380" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="492" y="412" w="96" h="80"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="518" y="380" w="11" h="32"/>
+            </attributes>
+          </decorator>
         </container>
         <container id="Check_if_IBAN_is_valid">
           <vertex>
@@ -1293,99 +1414,117 @@
             </attributes>
           </decorator>
         </container>
-        <container id="Add_notebook_to_Bulk_order">
+        <container id="Dummy_State_2">
           <vertex>
             <attributes>
-              <bounds x="1.859" y="496" w="33" h="33"/>
+              <bounds x="2,872" y="404" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="1.829" y="528" w="96" h="40"/>
-            </attributes>
-          </label>
-        </container>
-        <container id="Payment_via_bank_student">
-          <vertex>
-            <attributes>
-              <bounds x="2.488" y="368" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.451" y="400" w="96" h="40"/>
+              <bounds x="2,837" y="437" w="96" h="20"/>
             </attributes>
           </label>
           <decorator type="AND_join">
             <position>12</position>
             <attributes>
-              <bounds x="2.478" y="368" w="11" h="32"/>
+              <bounds x="2,862" y="404" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Dummy_State_1">
+          <vertex>
+            <attributes>
+              <bounds x="2,090" y="367" w="32" h="33"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="2,064" y="400" w="96" h="20"/>
+            </attributes>
+          </label>
+          <decorator type="AND_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="2,121" y="367" w="11" h="33"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Student_wants_to_pay_in_Cash">
+          <vertex>
+            <attributes>
+              <bounds x="1,996" y="441" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,965" y="472" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="2,027" y="441" w="11" h="32"/>
+            </attributes>
+          </decorator>
+          <decorator type="XOR_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="1,986" y="441" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Dummy_State">
+          <vertex>
+            <attributes>
+              <bounds x="1,088" y="236" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,060" y="268" w="96" h="20"/>
+            </attributes>
+          </label>
+          <decorator type="AND_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="1,119" y="236" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Pay_Laptop_in_Cash">
+          <vertex>
+            <attributes>
+              <bounds x="2,644" y="516" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="2,608" y="549" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="2,634" y="516" w="11" h="32"/>
             </attributes>
           </decorator>
         </container>
         <container id="Payment_Succesfull">
           <vertex>
             <attributes>
-              <bounds x="2.716" y="396" w="32" h="32"/>
+              <bounds x="2,716" y="396" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="2.688" y="429" w="96" h="40"/>
+              <bounds x="2,688" y="429" w="96" h="40"/>
             </attributes>
           </label>
           <decorator type="XOR_split">
             <position>13</position>
             <attributes>
-              <bounds x="2.747" y="396" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Notebook_arrives">
-          <vertex>
-            <attributes>
-              <bounds x="2.288" y="368" w="32" h="33"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.256" y="400" w="96" h="40"/>
-            </attributes>
-          </label>
-        </container>
-        <container id="Dummy_State_1">
-          <vertex>
-            <attributes>
-              <bounds x="2.090" y="367" w="32" h="33"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.064" y="400" w="96" h="20"/>
-            </attributes>
-          </label>
-          <decorator type="AND_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="2.121" y="367" w="11" h="33"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Dummy_State_2">
-          <vertex>
-            <attributes>
-              <bounds x="2.872" y="404" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.837" y="437" w="96" h="20"/>
-            </attributes>
-          </label>
-          <decorator type="AND_join">
-            <position>12</position>
-            <attributes>
-              <bounds x="2.862" y="404" w="11" h="32"/>
+              <bounds x="2,747" y="396" w="11" h="32"/>
             </attributes>
           </decorator>
         </container>
@@ -1407,23 +1546,53 @@
             </attributes>
           </decorator>
         </container>
-        <container id="Send_enrollment_package">
+        <container id="Notebook_arrives_1">
           <vertex>
             <attributes>
-              <bounds x="636" y="236" w="32" h="32"/>
+              <bounds x="2,187" y="531" w="32" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="600" y="268" w="96" h="60"/>
+              <bounds x="2,160" y="564" w="96" h="40"/>
             </attributes>
           </label>
-          <decorator type="AND_join">
-            <position>12</position>
+          <decorator type="AND_split">
+            <position>13</position>
             <attributes>
-              <bounds x="626" y="236" w="11" h="32"/>
+              <bounds x="2,218" y="531" w="11" h="32"/>
             </attributes>
           </decorator>
+        </container>
+        <container id="Notify_student">
+          <vertex>
+            <attributes>
+              <bounds x="1,584" y="600" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,548" y="632" w="96" h="20"/>
+            </attributes>
+          </label>
+          <decorator type="OR_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="1,574" y="600" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Register_Student_At_Department">
+          <vertex>
+            <attributes>
+              <bounds x="2,316" y="160" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="2,285" y="192" w="96" h="60"/>
+            </attributes>
+          </label>
         </container>
         <container id="Gather_Standard_Forms">
           <vertex>
@@ -1437,21 +1606,117 @@
             </attributes>
           </label>
         </container>
-        <container id="Gather_Additional_Forms_Optional">
+        <container id="Request_on_Time">
           <vertex>
             <attributes>
-              <bounds x="528" y="380" w="32" h="32"/>
+              <bounds x="1,735" y="433" w="33" h="32"/>
             </attributes>
           </vertex>
           <label>
             <attributes>
-              <bounds x="492" y="412" w="96" h="80"/>
+              <bounds x="1,707" y="464" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="1,766" y="433" w="12" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Motivation_letter_required">
+          <vertex>
+            <attributes>
+              <bounds x="1,184" y="484" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,156" y="516" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="1,215" y="484" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Motivation_Ok">
+          <vertex>
+            <attributes>
+              <bounds x="1,284" y="492" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,256" y="524" w="96" h="20"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="1,315" y="492" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Notify_Succesfull_registration">
+          <vertex>
+            <attributes>
+              <bounds x="2,492" y="160" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="2,456" y="192" w="96" h="60"/>
+            </attributes>
+          </label>
+          <decorator type="AND_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="2,482" y="160" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Register_Student">
+          <vertex>
+            <attributes>
+              <bounds x="2,080" y="160" w="33" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="2,048" y="192" w="96" h="40"/>
+            </attributes>
+          </label>
+          <decorator type="AND_split">
+            <position>13</position>
+            <attributes>
+              <bounds x="2,111" y="160" w="12" h="32"/>
+            </attributes>
+          </decorator>
+          <decorator type="XOR_join">
+            <position>12</position>
+            <attributes>
+              <bounds x="2,070" y="160" w="12" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Required_join">
+          <vertex>
+            <attributes>
+              <bounds x="1,416" y="496" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="1,380" y="528" w="96" h="20"/>
             </attributes>
           </label>
           <decorator type="XOR_join">
             <position>12</position>
             <attributes>
-              <bounds x="518" y="380" w="11" h="32"/>
+              <bounds x="1,406" y="496" w="11" h="32"/>
             </attributes>
           </decorator>
         </container>
@@ -1463,7 +1728,7 @@
           </vertex>
           <label>
             <attributes>
-              <bounds x="236" y="344" w="96" h="60"/>
+              <bounds x="240" y="344" w="96" h="60"/>
             </attributes>
           </label>
           <decorator type="AND_split">
@@ -1472,326 +1737,15 @@
               <bounds x="299" y="312" w="11" h="32"/>
             </attributes>
           </decorator>
-          <decorator type="XOR_join">
-            <position>12</position>
-            <attributes>
-              <bounds x="258" y="312" w="11" h="32"/>
-            </attributes>
-          </decorator>
         </container>
-        <container id="Pick_up_Laptop">
-          <vertex>
-            <attributes>
-              <bounds x="2.780" y="516" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.744" y="549" w="96" h="20"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_join">
-            <position>12</position>
-            <attributes>
-              <bounds x="2.770" y="516" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Motivation_letter_required">
-          <vertex>
-            <attributes>
-              <bounds x="1.184" y="484" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="1.156" y="516" w="96" h="40"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="1.215" y="484" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Student_wants_to_pay_in_Cash">
-          <vertex>
-            <attributes>
-              <bounds x="1.996" y="441" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="1.965" y="472" w="96" h="40"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="2.027" y="441" w="11" h="32"/>
-            </attributes>
-          </decorator>
-          <decorator type="XOR_join">
-            <position>12</position>
-            <attributes>
-              <bounds x="1.986" y="441" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Wait_for_forms_to_be_filled_out">
-          <vertex>
-            <attributes>
-              <bounds x="715" y="236" w="34" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="688" y="269" w="96" h="40"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="746" y="236" w="13" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Check_if_forms_are_complete">
-          <vertex>
-            <attributes>
-              <bounds x="940" y="236" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="912" y="268" w="96" h="40"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="971" y="236" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Dummy_State">
-          <vertex>
-            <attributes>
-              <bounds x="1.088" y="236" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="1.060" y="268" w="96" h="20"/>
-            </attributes>
-          </label>
-          <decorator type="AND_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="1.119" y="236" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Register_Student">
-          <vertex>
-            <attributes>
-              <bounds x="2.080" y="160" w="33" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.048" y="192" w="96" h="40"/>
-            </attributes>
-          </label>
-          <decorator type="AND_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="2.111" y="160" w="12" h="32"/>
-            </attributes>
-          </decorator>
-          <decorator type="XOR_join">
-            <position>12</position>
-            <attributes>
-              <bounds x="2.070" y="160" w="12" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Offer_Payment_to_External_Service">
-          <vertex>
-            <attributes>
-              <bounds x="2.596" y="368" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.560" y="400" w="96" h="60"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_join">
-            <position>12</position>
-            <attributes>
-              <bounds x="2.586" y="368" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Add_Motivation_Letter_Request">
-          <vertex>
-            <attributes>
-              <bounds x="448" y="500" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="416" y="532" w="96" h="40"/>
-            </attributes>
-          </label>
-        </container>
-        <container id="Motivation_Ok">
-          <vertex>
-            <attributes>
-              <bounds x="1.284" y="492" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="1.256" y="524" w="96" h="20"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="1.315" y="492" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Request_on_Time">
-          <vertex>
-            <attributes>
-              <bounds x="1.735" y="433" w="33" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="1.707" y="464" w="96" h="40"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_split">
-            <position>13</position>
-            <attributes>
-              <bounds x="1.766" y="433" w="12" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Required_join">
-          <vertex>
-            <attributes>
-              <bounds x="1.416" y="496" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="1.380" y="528" w="96" h="20"/>
-            </attributes>
-          </label>
-          <decorator type="XOR_join">
-            <position>12</position>
-            <attributes>
-              <bounds x="1.406" y="496" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <container id="Wait_for_Notebook_to_arrive_1">
-          <vertex>
-            <attributes>
-              <bounds x="2.098" y="530" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="2.068" y="564" w="96" h="60"/>
-            </attributes>
-          </label>
-        </container>
-        <container id="Notify_student">
-          <vertex>
-            <attributes>
-              <bounds x="1.584" y="600" w="32" h="32"/>
-            </attributes>
-          </vertex>
-          <label>
-            <attributes>
-              <bounds x="1.548" y="632" w="96" h="20"/>
-            </attributes>
-          </label>
-          <decorator type="OR_join">
-            <position>12</position>
-            <attributes>
-              <bounds x="1.574" y="600" w="11" h="32"/>
-            </attributes>
-          </decorator>
-        </container>
-        <flow source="Dummy_State_2" target="OutputCondition">
-          <ports in="13" out="12"/>
+        <flow source="Notebook_arrives_1" target="Register_Student">
+          <ports in="2" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
-            <points>
-              <value x="2.903" y="419,5"/>
-              <value x="2.996" y="419,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Register_Student_At_Department" target="Notify_Succesfull_registration">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="2.347" y="175,5"/>
-              <value x="2.482" y="175,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Pay_Laptop_in_Cash" target="Pick_up_Laptop">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="2.675" y="531,5"/>
-              <value x="2.770" y="531,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Notify_student" target="OutputCondition">
-          <ports in="13" out="12"/>
-          <attributes>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="1.615" y="615,5"/>
-              <value x="2.496" y="680"/>
-              <value x="2.660" y="395,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Request_on_Time" target="Order_Seperate_notebook">
-          <label>No</label>
-          <ports in="3" out="12"/>
-          <attributes>
-            <labelposition x="516" y="-16"/>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="1.841" y="423,25"/>
-              <value x="1.936" y="391,5"/>
-            </points>
           </attributes>
         </flow>
         <flow source="Wait_for_Notebook_to_arrive" target="Notebook_arrives">
           <ports in="13" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Forms_Complete_Dummy_State" target="Gather_Standard_Forms">
-          <ports in="2" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
@@ -1801,9 +1755,114 @@
           <attributes>
             <lineStyle>12</lineStyle>
             <points>
-              <value x="866" y="251,5"/>
+              <value x="866" y="251.5"/>
               <value x="452" y="125"/>
               <value x="147" y="312"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Pick_up_Laptop" target="Dummy_State_2">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="2,811" y="531.5"/>
+              <value x="2,862" y="419.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Send_enrollment_package" target="Wait_for_forms_to_be_filled_out">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Motivation_letter_required" target="Motivation_Ok">
+          <label>Yes</label>
+          <ports in="3" out="12"/>
+          <attributes>
+            <offset x="0" y="-0"/>
+            <labelposition x="526" y="10"/>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="1,225" y="507.25"/>
+              <value x="1,284" y="507.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Check_if_forms_are_complete" target="Register_Request">
+          <ports in="2" out="3"/>
+          <attributes>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="981" y="251.5"/>
+              <value x="541" y="637"/>
+              <value x="142" y="335.25"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Motivation_Ok" target="Required_join">
+          <label>Yes</label>
+          <ports in="3" out="3"/>
+          <attributes>
+            <offset x="0" y="0"/>
+            <labelposition x="512" y="-10"/>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="1,325" y="515.25"/>
+              <value x="1,406" y="519.25"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Dummy_State" target="Motivation_letter_required">
+          <ports in="4" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Notebook_arrives" target="Pay_Laptop_in_Cash">
+          <ports in="13" out="3"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Motivation_Ok" target="Notify_student">
+          <label>No</label>
+          <ports in="3" out="2"/>
+          <attributes>
+            <labelposition x="503" y="10"/>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="1,325" y="515.25"/>
+              <value x="1,440" y="596"/>
+              <value x="1,574" y="615.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Forms_Complete_Dummy_State" target="Request_On_Time">
+          <ports in="2" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Offer_Payment_to_External_Service" target="Payment_Succesfull">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="2,627" y="383.5"/>
+              <value x="2,716" y="411.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Notify_student" target="OutputCondition">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="1,615" y="615.5"/>
+              <value x="2,496" y="680"/>
+              <value x="2,660" y="395.5"/>
             </points>
           </attributes>
         </flow>
@@ -1812,13 +1871,13 @@
           <attributes>
             <lineStyle>11</lineStyle>
             <points>
-              <value x="2.529" y="383,5"/>
-              <value x="2.586" y="383,5"/>
+              <value x="2,529" y="383.5"/>
+              <value x="2,586" y="383.5"/>
             </points>
           </attributes>
         </flow>
-        <flow source="Check_if_IBAN_is_valid" target="Check_if_forms_are_complete">
-          <ports in="2" out="12"/>
+        <flow source="Register_Request" target="Forms_Complete_Dummy_State">
+          <ports in="13" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
@@ -1829,51 +1888,93 @@
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
+        <flow source="Payment_Succesfull" target="Pick_up_Laptop">
+          <label>Yes</label>
+          <ports in="2" out="4"/>
+          <attributes>
+            <offset x="2.021" y="1.741"/>
+            <labelposition x="469" y="-17"/>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="2,757" y="411.5"/>
+              <value x="2,804" y="452"/>
+              <value x="2,775" y="516"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Financial_Prerequisites_Ok" target="Notify_student">
+          <label>No</label>
+          <ports in="3" out="1"/>
+          <attributes>
+            <labelposition x="483" y="-14"/>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="1,321" y="395.25"/>
+              <value x="1,476" y="480"/>
+              <value x="1,574" y="607.75"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Request_On_Time" target="Add_Motivation_Letter_Request">
+          <label>No</label>
+          <ports in="2" out="10"/>
+          <attributes>
+            <offset x="0" y="0"/>
+            <labelposition x="688" y="11"/>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="437" y="395.5"/>
+              <value x="463.5" y="500"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Student_wants_to_pay_in_Cash" target="Wait_for_Notebook_to_arrive_1">
+          <label>No</label>
+          <ports in="3" out="12"/>
+          <attributes>
+            <offset x="0" y="-0"/>
+            <labelposition x="510" y="12"/>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="2,037" y="464.25"/>
+              <value x="2,198" y="545.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="C" target="Notify_Succesfull_registration">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="2,351" y="323.5"/>
+              <value x="2,482" y="175.5"/>
+            </points>
+          </attributes>
+        </flow>
         <flow source="Check_join" target="Request_on_Time">
           <ports in="13" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Pick_up_Laptop" target="Dummy_State_2">
+        <flow source="Register_Student_At_Department" target="Notify_Succesfull_registration">
           <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
             <points>
-              <value x="2.811" y="531,5"/>
-              <value x="2.862" y="419,5"/>
+              <value x="2,347" y="175.5"/>
+              <value x="2,482" y="175.5"/>
             </points>
           </attributes>
         </flow>
-        <flow source="Check_if_forms_are_complete" target="Forms_Complete_Dummy_State">
-          <label>No</label>
-          <ports in="3" out="3"/>
+        <flow source="Gather_Additional_Forms_Optional" target="Send_enrollment_package">
+          <ports in="13" out="2"/>
           <attributes>
-            <offset x="0" y="0"/>
-            <labelposition x="326" y="-82"/>
-            <lineStyle>13</lineStyle>
-            <points>
-              <value x="981" y="259,25"/>
-              <value x="1.020" y="480"/>
-              <value x="420" y="596"/>
-              <value x="258" y="335,25"/>
-            </points>
+            <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Prerequisites_Ok" target="Notify_student">
-          <label>No</label>
-          <ports in="2" out="4"/>
-          <attributes>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="1.321" y="251,5"/>
-              <value x="1.688" y="300"/>
-              <value x="1.579" y="600"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Notebook_arrives_1" target="Payment_via_bank_student">
-          <ports in="3" out="3"/>
+        <flow source="Dummy_State" target="Financial_Prerequisites_Ok">
+          <ports in="3" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
@@ -1886,176 +1987,8 @@
             <labelposition x="542" y="-13"/>
             <lineStyle>11</lineStyle>
             <points>
-              <value x="1.321" y="259,25"/>
-              <value x="1.610" y="391,25"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Motivation_letter_required" target="Motivation_Ok">
-          <label>Yes</label>
-          <ports in="3" out="12"/>
-          <attributes>
-            <offset x="0" y="-0"/>
-            <labelposition x="526" y="10"/>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="1.225" y="507,25"/>
-              <value x="1.284" y="507,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Dummy_State_1" target="Wait_for_Notebook_to_arrive">
-          <ports in="2" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Motivation_Ok" target="Notify_student">
-          <label>No</label>
-          <ports in="3" out="2"/>
-          <attributes>
-            <labelposition x="503" y="10"/>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="1.325" y="515,25"/>
-              <value x="1.440" y="596"/>
-              <value x="1.574" y="615,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Notify_Succesfull_registration" target="Dummy_State_2">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="2.523" y="175,5"/>
-              <value x="2.788" y="236"/>
-              <value x="2.862" y="419,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="C" target="Notify_Succesfull_registration">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="2.351" y="323,5"/>
-              <value x="2.482" y="175,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Financial_Prerequisites_Ok" target="Check_join">
-          <label>Yes</label>
-          <ports in="3" out="2"/>
-          <attributes>
-            <offset x="0" y="-0"/>
-            <labelposition x="465" y="-8"/>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="1.321" y="395,25"/>
-              <value x="1.610" y="383,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Wait_for_forms_to_be_filled_out" target="OutputCondition">
-          <label>Timer Expires</label>
-          <ports in="2" out="10"/>
-          <attributes>
-            <offset x="0" y="0"/>
-            <labelposition x="495" y="-31"/>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="841" y="251,5"/>
-              <value x="2.304" y="24"/>
-              <value x="3.011,5" y="404"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="InputCondition" target="Register_Request">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Dummy_State" target="Motivation_letter_required">
-          <ports in="4" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Financial_Prerequisites_Ok" target="Notify_student">
-          <label>No</label>
-          <ports in="3" out="1"/>
-          <attributes>
-            <labelposition x="483" y="-14"/>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="1.321" y="395,25"/>
-              <value x="1.476" y="480"/>
-              <value x="1.574" y="607,75"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Offer_Payment_to_External_Service" target="Payment_Succesfull">
-          <ports in="13" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="2.627" y="383,5"/>
-              <value x="2.716" y="411,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Motivation_letter_required" target="Required_join">
-          <label>No</label>
-          <ports in="1" out="4"/>
-          <attributes>
-            <labelposition x="498" y="-12"/>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="1.225" y="491,75"/>
-              <value x="1.322" y="485"/>
-              <value x="1.411" y="496"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Gather_Additional_Forms_Optional" target="Send_enrollment_package">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="C" target="Payment_via_bank_student">
-          <ports in="11" out="3"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="2.335,5" y="339"/>
-              <value x="2.478" y="391,25"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Check_if_forms_are_complete" target="Dummy_State">
-          <label>Yes</label>
-          <ports in="2" out="12"/>
-          <attributes>
-            <labelposition x="514" y="-13"/>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="981" y="251,5"/>
-              <value x="1.088" y="251,5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Request_On_Time" target="Gather_Additional_Forms_Optional">
-          <label>Yes</label>
-          <ports in="2" out="2"/>
-          <attributes>
-            <labelposition x="469" y="-10"/>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="437" y="395,5"/>
-              <value x="518" y="395,5"/>
+              <value x="1,321" y="259.25"/>
+              <value x="1,610" y="391.25"/>
             </points>
           </attributes>
         </flow>
@@ -2065,10 +1998,32 @@
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Forms_Complete_Dummy_State" target="Request_On_Time">
-          <ports in="2" out="12"/>
+        <flow source="Required_join" target="Check_join">
+          <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Request_On_Time" target="Gather_Additional_Forms_Optional">
+          <label>Yes</label>
+          <ports in="2" out="2"/>
+          <attributes>
+            <labelposition x="469" y="-10"/>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="437" y="395.5"/>
+              <value x="518" y="395.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Pay_Laptop_in_Cash" target="Pick_up_Laptop">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="2,675" y="531.5"/>
+              <value x="2,770" y="531.5"/>
+            </points>
           </attributes>
         </flow>
         <flow source="Request_on_Time" target="Add_notebook_to_Bulk_order">
@@ -2079,53 +2034,36 @@
             <labelposition x="554" y="11"/>
             <lineStyle>11</lineStyle>
             <points>
-              <value x="1.841" y="423,25"/>
-              <value x="1.936" y="495,5"/>
+              <value x="1,841" y="423.25"/>
+              <value x="1,936" y="495.5"/>
             </points>
           </attributes>
         </flow>
-        <flow source="Notebook_arrives" target="Pay_Laptop_in_Cash">
-          <ports in="13" out="3"/>
+        <flow source="Order_Seperate_notebook" target="Student_wants_to_pay_in_Cash">
+          <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Payment_Succesfull" target="Offer_Payment_to_External_Service">
-          <label>Delayed</label>
-          <ports in="2" out="1"/>
+        <flow source="C" target="Payment_via_bank_student">
+          <ports in="11" out="3"/>
           <attributes>
-            <offset x="0" y="-0"/>
-            <labelposition x="620" y="-9"/>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="2,335.5" y="339"/>
+              <value x="2,478" y="391.25"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Notify_Succesfull_registration" target="Dummy_State_2">
+          <ports in="13" out="2"/>
+          <attributes>
             <lineStyle>12</lineStyle>
             <points>
-              <value x="2.757" y="411,5"/>
-              <value x="2.672" y="288"/>
-              <value x="2.586" y="375,75"/>
+              <value x="2,523" y="175.5"/>
+              <value x="2,788" y="236"/>
+              <value x="2,862" y="419.5"/>
             </points>
-          </attributes>
-        </flow>
-        <flow source="Add_Motivation_Letter_Request" target="Gather_Additional_Forms_Optional">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Dummy_State" target="Prerequisites_Ok">
-          <ports in="2" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Add_notebook_to_Bulk_order" target="Student_wants_to_pay_in_Cash">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Register_Request" target="Forms_Complete_Dummy_State">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
           </attributes>
         </flow>
         <flow source="Register_Student" target="C">
@@ -2139,11 +2077,37 @@
           <ports in="2" out="12"/>
           <attributes>
             <offset x="0" y="0"/>
-            <labelposition x="372,751" y="-11,263"/>
+            <labelposition x="372.751" y="-11.263"/>
             <lineStyle>11</lineStyle>
             <points>
-              <value x="2.037" y="456,5"/>
-              <value x="2.090" y="391"/>
+              <value x="2,037" y="456.5"/>
+              <value x="2,090" y="391"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Gather_Standard_Forms" target="Send_enrollment_package">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Notebook_arrives_1" target="Payment_via_bank_student">
+          <ports in="3" out="3"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Payment_Succesfull" target="Offer_Payment_to_External_Service">
+          <label>Delayed</label>
+          <ports in="2" out="1"/>
+          <attributes>
+            <offset x="0" y="-0"/>
+            <labelposition x="620" y="-9"/>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="2,757" y="411.5"/>
+              <value x="2,672" y="288"/>
+              <value x="2,586" y="375.75"/>
             </points>
           </attributes>
         </flow>
@@ -2153,80 +2117,53 @@
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Notebook_arrives_1" target="Register_Student">
-          <ports in="2" out="2"/>
+        <flow source="Wait_for_forms_to_be_filled_out" target="OutputCondition">
+          <label>Timer Expires</label>
+          <ports in="2" out="10"/>
           <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Student_wants_to_pay_in_Cash" target="Wait_for_Notebook_to_arrive_1">
-          <label>No</label>
-          <ports in="3" out="12"/>
-          <attributes>
-            <offset x="0" y="-0"/>
-            <labelposition x="510" y="12"/>
-            <lineStyle>11</lineStyle>
+            <offset x="0" y="0"/>
+            <labelposition x="495" y="-31"/>
+            <lineStyle>12</lineStyle>
             <points>
-              <value x="2.037" y="464,25"/>
-              <value x="2.198" y="545,5"/>
+              <value x="841" y="251.5"/>
+              <value x="2,304" y="24"/>
+              <value x="3,011.5" y="404"/>
             </points>
           </attributes>
         </flow>
-        <flow source="Required_join" target="Check_join">
+        <flow source="Motivation_letter_required" target="Required_join">
+          <label>No</label>
+          <ports in="1" out="4"/>
+          <attributes>
+            <labelposition x="498" y="-12"/>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="1,225" y="491.75"/>
+              <value x="1,322" y="485"/>
+              <value x="1,411" y="496"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Add_notebook_to_Bulk_order" target="Student_wants_to_pay_in_Cash">
           <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Dummy_State" target="Financial_Prerequisites_Ok">
-          <ports in="3" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Send_enrollment_package" target="Wait_for_forms_to_be_filled_out">
+        <flow source="Dummy_State_2" target="OutputCondition">
           <ports in="13" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Motivation_Ok" target="Required_join">
-          <label>Yes</label>
-          <ports in="3" out="3"/>
-          <attributes>
-            <offset x="0" y="0"/>
-            <labelposition x="512" y="-10"/>
-            <lineStyle>11</lineStyle>
             <points>
-              <value x="1.325" y="515,25"/>
-              <value x="1.406" y="519,25"/>
+              <value x="2,903" y="419.5"/>
+              <value x="2,996" y="419.5"/>
             </points>
           </attributes>
         </flow>
-        <flow source="Order_Seperate_notebook" target="Student_wants_to_pay_in_Cash">
+        <flow source="InputCondition" target="Register_Request">
           <ports in="13" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Gather_Standard_Forms" target="Send_enrollment_package">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-          </attributes>
-        </flow>
-        <flow source="Payment_Succesfull" target="Pick_up_Laptop">
-          <label>Yes</label>
-          <ports in="2" out="4"/>
-          <attributes>
-            <offset x="2,021" y="1,741"/>
-            <labelposition x="469" y="-17"/>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="2.757" y="411,5"/>
-              <value x="2.804" y="452"/>
-              <value x="2.775" y="516"/>
-            </points>
           </attributes>
         </flow>
         <flow source="Payment_Succesfull" target="Pay_Laptop_in_Cash">
@@ -2236,28 +2173,94 @@
             <labelposition x="500" y="0"/>
             <lineStyle>12</lineStyle>
             <points>
-              <value x="2.757" y="419,25"/>
-              <value x="2.780" y="476"/>
-              <value x="2.652" y="492"/>
-              <value x="2.639" y="516"/>
+              <value x="2,757" y="419.25"/>
+              <value x="2,780" y="476"/>
+              <value x="2,652" y="492"/>
+              <value x="2,639" y="516"/>
             </points>
           </attributes>
         </flow>
-        <flow source="Request_On_Time" target="Add_Motivation_Letter_Request">
+        <flow source="Request_on_Time" target="Order_Seperate_notebook">
           <label>No</label>
-          <ports in="2" out="10"/>
+          <ports in="3" out="12"/>
           <attributes>
-            <offset x="0" y="0"/>
-            <labelposition x="688" y="11"/>
+            <labelposition x="516" y="-16"/>
             <lineStyle>11</lineStyle>
             <points>
-              <value x="437" y="395,5"/>
-              <value x="463,5" y="500"/>
+              <value x="1,841" y="423.25"/>
+              <value x="1,936" y="391.5"/>
             </points>
           </attributes>
         </flow>
         <flow source="Dummy_State_1" target="Register_Student">
           <ports in="2" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Forms_Complete_Dummy_State" target="Gather_Standard_Forms">
+          <ports in="2" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Add_Motivation_Letter_Request" target="Gather_Additional_Forms_Optional">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Check_if_IBAN_is_valid" target="Check_if_forms_are_complete">
+          <ports in="2" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Check_if_forms_are_complete" target="Dummy_State">
+          <label>Yes</label>
+          <ports in="2" out="12"/>
+          <attributes>
+            <labelposition x="514" y="-13"/>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="981" y="251.5"/>
+              <value x="1,088" y="251.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Prerequisites_Ok" target="Notify_student">
+          <label>No</label>
+          <ports in="2" out="4"/>
+          <attributes>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="1,321" y="251.5"/>
+              <value x="1,688" y="300"/>
+              <value x="1,579" y="600"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Dummy_State_1" target="Wait_for_Notebook_to_arrive">
+          <ports in="2" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
+        <flow source="Financial_Prerequisites_Ok" target="Check_join">
+          <label>Yes</label>
+          <ports in="3" out="2"/>
+          <attributes>
+            <offset x="0" y="-0"/>
+            <labelposition x="465" y="-8"/>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="1,321" y="395.25"/>
+              <value x="1,610" y="383.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Dummy_State" target="Prerequisites_Ok">
+          <ports in="2" out="12"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
