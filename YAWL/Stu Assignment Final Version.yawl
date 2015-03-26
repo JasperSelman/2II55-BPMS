@@ -293,13 +293,13 @@
           <split code="xor" />
           <startingMappings>
             <mapping>
-              <expression query="&lt;iban&gt;{//APPLICATION/IBAN/text()}&lt;/iban&gt;" />
+              <expression query="&lt;iban&gt;{/Net/APPLICATION/IBAN/text()}&lt;/iban&gt;" />
               <mapsTo>iban</mapsTo>
             </mapping>
           </startingMappings>
           <completedMappings>
             <mapping>
-              <expression query="&lt;iban_valid&gt;{boolean(/Check_if_IBAN_is_valid/iban_valid)}&lt;/iban_valid&gt;" />
+              <expression query="&lt;iban_valid&gt;{/Check_if_IBAN_is_valid/iban_valid/text()}&lt;/iban_valid&gt;" />
               <mapsTo>iban_valid</mapsTo>
             </mapping>
           </completedMappings>
@@ -328,6 +328,12 @@
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
+          <startingMappings>
+            <mapping>
+              <expression query="&lt;iban_valid&gt;{/Net/iban_valid/text()}&lt;/iban_valid&gt;" />
+              <mapsTo>iban_valid</mapsTo>
+            </mapping>
+          </startingMappings>
           <completedMappings>
             <mapping>
               <expression query="&lt;FORMS_COMPLETE&gt;{/Check_if_forms_are_complete/FORMS_COMPLETE/text()}&lt;/FORMS_COMPLETE&gt;" />
@@ -861,7 +867,7 @@
           <name>Payment Succesfull?</name>
           <flowsInto>
             <nextElementRef id="Pay_Laptop_in_Cash" />
-            <predicate ordering="1">/Net/payment_status = 1</predicate>
+            <predicate ordering="1">/Net/payment_status = 3</predicate>
           </flowsInto>
           <flowsInto>
             <nextElementRef id="Offer_Payment_to_External_Service" />
@@ -875,7 +881,7 @@
           <split code="xor" />
           <startingMappings>
             <mapping>
-              <expression query="&lt;payment_iban&gt;{//APPLICATION/IBAN/text()}&lt;/payment_iban&gt;" />
+              <expression query="&lt;payment_iban&gt;{/Net/APPLICATION/IBAN/text()}&lt;/payment_iban&gt;" />
               <mapsTo>payment_iban</mapsTo>
             </mapping>
             <mapping>
@@ -946,6 +952,12 @@
     </decomposition>
     <decomposition id="Check_if_forms_are_complete" xsi:type="WebServiceGatewayFactsType">
       <name>Check if forms are complete</name>
+      <inputParam>
+        <index>1</index>
+        <name>iban_valid</name>
+        <type>string</type>
+        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+      </inputParam>
       <outputParam>
         <index>0</index>
         <name>FORMS_COMPLETE</name>
@@ -1157,9 +1169,9 @@
     <specification id="Stu_Assignment_Final_Version">
       <size w="58" h="28"/>
       <net id="Net">
-        <bounds x="-1798" y="-113" w="3048" h="761"/>
-        <frame x="0" y="0" w="1268" h="538"/>
-        <viewport x="0" y="0" w="1268" h="538"/>
+        <bounds x="-1593" y="-120" w="3048" h="761"/>
+        <frame x="0" y="0" w="1367" h="538"/>
+        <viewport x="0" y="0" w="1367" h="538"/>
         <vertex id="OutputCondition">
           <attributes>
             <bounds x="2,996" y="404" w="32" h="32"/>
@@ -1811,14 +1823,14 @@
             </attributes>
           </decorator>
         </container>
-        <flow source="Notebook_2_arrive_dummy_state" target="Pay_Laptop_in_Cash">
-          <ports in="2" out="3"/>
+        <flow source="Notebook_arrives_1" target="Register_Student">
+          <ports in="2" out="2"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Notebook_arrives_1" target="Register_Student">
-          <ports in="2" out="2"/>
+        <flow source="Notebook_2_arrive_dummy_state" target="Pay_Laptop_in_Cash">
+          <ports in="2" out="3"/>
           <attributes>
             <lineStyle>11</lineStyle>
           </attributes>
@@ -1941,16 +1953,6 @@
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Offer_Payment_to_External_Service" target="Payment_Succesfull">
-          <ports in="13" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
-            <points>
-              <value x="2,627" y="383.5"/>
-              <value x="2,716" y="411.5"/>
-            </points>
-          </attributes>
-        </flow>
         <flow source="Notify_student" target="OutputCondition">
           <ports in="13" out="12"/>
           <attributes>
@@ -1959,6 +1961,16 @@
               <value x="1,615" y="615.5"/>
               <value x="2,496" y="680"/>
               <value x="2,660" y="395.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Offer_Payment_to_External_Service" target="Payment_Succesfull">
+          <ports in="13" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+            <points>
+              <value x="2,627" y="383.5"/>
+              <value x="2,716" y="411.5"/>
             </points>
           </attributes>
         </flow>
@@ -2053,6 +2065,12 @@
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
+        <flow source="Gather_Additional_Forms_Optional" target="Send_enrollment_package">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
         <flow source="Register_Student_At_Department" target="Notify_Succesfull_registration">
           <ports in="13" out="2"/>
           <attributes>
@@ -2061,12 +2079,6 @@
               <value x="2,347" y="175.5"/>
               <value x="2,482" y="175.5"/>
             </points>
-          </attributes>
-        </flow>
-        <flow source="Gather_Additional_Forms_Optional" target="Send_enrollment_package">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
           </attributes>
         </flow>
         <flow source="Dummy_State" target="Financial_Prerequisites_Ok">
@@ -2227,6 +2239,12 @@
             </points>
           </attributes>
         </flow>
+        <flow source="Add_notebook_to_Bulk_order" target="Student_wants_to_pay_in_Cash">
+          <ports in="13" out="2"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
         <flow source="Motivation_letter_required" target="Required_join">
           <label>No</label>
           <ports in="1" out="4"/>
@@ -2238,12 +2256,6 @@
               <value x="1,322" y="485"/>
               <value x="1,411" y="496"/>
             </points>
-          </attributes>
-        </flow>
-        <flow source="Add_notebook_to_Bulk_order" target="Student_wants_to_pay_in_Cash">
-          <ports in="13" out="2"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
           </attributes>
         </flow>
         <flow source="Dummy_State_2" target="OutputCondition">
