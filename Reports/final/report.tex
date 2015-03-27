@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper,twocolumn]{article}
+\documentclass[11pt,a4paper]{article}
 \usepackage{geometry}
 \usepackage{amsmath}
 \usepackage{float}
@@ -34,7 +34,7 @@
 
 	\input{abstract}
 
-	\section{Model 1}
+	\section{Model 1 Description}
 	\label{sec:model1}
 	\input{sections/model1}
 
@@ -55,6 +55,13 @@
 	\input{sections/conclusion}
 
 	\begin{appendix}
+	\newpage
+	\input{sections/appendix_exercise}
+	
 	\input{sections/appendix_model1}
+
+	\input{sections/appendix_additional}
+
+	\input{sections/appendix_model2}
 	\end{appendix}
 \end{document}
