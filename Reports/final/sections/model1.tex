@@ -12,6 +12,7 @@
 % ProM. An argument that a model is sound could be the combination
 % of a check by ProM and a manual analysis of these special parts.
 
+\subsection{Description}
 In this section we describe in detail how we model the description of the exercise, as given in \autoref{app:appendix_exercise}.
 To make this description easier to understand we will use figures of parts of the model to show how we modeled the process, but it should be possible to understand this without the figures.
 A complete overview of the process modeled in Bizagi can be found in \autoref{app:appendix_model1}.
@@ -123,3 +124,73 @@ After this task, this part of the process is finished and if the registration is
 	\caption{The last part of the model in Bizagi}
 	\label{fig:model1-part3}
 \end{figure}
+
+\subsection{Workflow patterns}
+
+\subsubsection{Parallelism}
+
+	Figure~\ref{fig:patterns:parallelism} shows the parallelism pattern used in our model.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{pattern-parallel}
+		\caption{Parallelism workflow pattern}
+		\label{fig:patterns:parallelism}
+	\end{figure}
+
+
+\subsubsection{Implicit XOR-split}
+
+	Figure~\ref{fig:patterns:implxor} shows the implicit XOR-split pattern used in our model.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.7\textwidth]{pattern-implxor}
+		\caption{Implicit XOR-split workflow pattern}
+		\label{fig:patterns:implxor}
+	\end{figure}
+
+\subsubsection{Explicit XOR-split}
+
+	Figure~\ref{fig:patterns:explxor} shows the explicit XOR-split pattern used in our model.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.5\textwidth]{pattern-explxor}
+		\caption{Explicit XOR-split workflow pattern}
+		\label{fig:patterns:explxor}
+	\end{figure}
+
+\subsubsection{OR-join}
+
+	Figure~\ref{fig:patterns:orjoin} shows the OR-join pattern used in our model.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\textwidth]{pattern-orjoin}
+		\caption{OR-join workflow pattern}
+		\label{fig:patterns:orjoin}
+	\end{figure}
+
+\subsubsection{Iteration}
+
+	Figure~\ref{fig:patterns:iteration} shows the iteration pattern used in our model.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{pattern-iteration}
+		\caption{Iteration workflow pattern}
+		\label{fig:patterns:iteration}
+	\end{figure}
+
+\subsubsection{Milestone}
+
+	Figure~\ref{fig:patterns:milestone} shows the milestone pattern used in our model.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{pattern-milestone}
+		\caption{Milestone workflow pattern}
+		\label{fig:patterns:milestone}
+	\end{figure}
+
