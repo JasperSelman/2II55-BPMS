@@ -138,6 +138,8 @@ After this task, this part of the process is finished and if the registration is
 		\label{fig:patterns:parallelism}
 	\end{figure}
 
+	We use parallelism here to decrease the flow time and increase resource utilisation.
+	Since gathering standard forms and adding a letter to the mail package can be done at the same time, the total time required to finish this part of the flow can be lower.
 
 \subsubsection{Implicit XOR-split}
 
@@ -150,6 +152,8 @@ After this task, this part of the process is finished and if the registration is
 		\label{fig:patterns:implxor}
 	\end{figure}
 
+	We use the deferred timer choice to end the model when the applicant does not reply on time.
+
 \subsubsection{Explicit XOR-split}
 
 	Figure~\ref{fig:patterns:explxor} shows the explicit XOR-split pattern used in our model.
@@ -160,6 +164,9 @@ After this task, this part of the process is finished and if the registration is
 		\caption{Explicit XOR-split workflow pattern}
 		\label{fig:patterns:explxor}
 	\end{figure}
+
+	The explicit XOR-split is used a number of times throughout the model to make direct choices based on user input or state.
+	In this case, we use it do decide whether or not it's necessary to add a request for a motivation letter.
 
 \subsubsection{OR-join}
 
@@ -172,6 +179,9 @@ After this task, this part of the process is finished and if the registration is
 		\label{fig:patterns:orjoin}
 	\end{figure}
 
+	We model the OR-join pattern as a parallel split with choices.
+	In Figure~\ref{fig:patterns:orjoin}, we make use of this pattern for the different types of checks on the applicant.
+
 \subsubsection{Iteration}
 
 	Figure~\ref{fig:patterns:iteration} shows the iteration pattern used in our model.
@@ -182,6 +192,9 @@ After this task, this part of the process is finished and if the registration is
 		\caption{Iteration workflow pattern}
 		\label{fig:patterns:iteration}
 	\end{figure}
+
+	Our implementation of the iteration pattern is a simple loop that will repeat the information gathering part of the model.
+	If an applicant does not fill out the forms completely, we step back to sending the enrollment package.
 
 \subsubsection{Milestone}
 
@@ -194,3 +207,5 @@ After this task, this part of the process is finished and if the registration is
 		\label{fig:patterns:milestone}
 	\end{figure}
 
+	We use the milestone pattern to make sure that applicants can only pay via bank transfer while the registration is still running.
+	After the registration is complete, applicants can only pay in cash.
