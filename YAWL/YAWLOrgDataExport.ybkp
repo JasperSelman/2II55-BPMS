@@ -63,7 +63,7 @@
     </participant>
     <participant id="PA-97160bee-65ff-4919-bd50-ce102c8c400c">
       <userid>AE</userid>
-      <password>uL49EmQxDDuMhI1LkNUgYXmkDMQ=</password>
+      <password>PaVBVZkYqAjCQCu6UBL2xgsnZhw=</password>
       <firstname>John Doe</firstname>
       <lastname>AE</lastname>
       <description>John Doe who works as a administration employee</description>
@@ -91,6 +91,21 @@
       <capabilities/>
       <privileges>00000000</privileges>
     </participant>
+    <participant id="PA-768e5517-8fcb-4a0f-8b43-67a58392ea7b">
+      <userid>Dummy</userid>
+      <password>g01hseWv9/gtTvnoMdrwz6KCqos=</password>
+      <firstname>Dummy</firstname>
+      <lastname>Dummy</lastname>
+      <description>Dummy, which is necessary for the part where the applicant determines when he wants to pay via the bank.</description>
+      <notes/>
+      <isAdministrator>false</isAdministrator>
+      <roles>
+        <role>RO-25b99031-dbb3-4a6f-b076-dc85b7d7ca2c</role>
+      </roles>
+      <positions/>
+      <capabilities/>
+      <privileges>00000000</privileges>
+    </participant>
   </participants>
   <roles>
     <role id="RO-167ab9a4-35b7-472b-a6aa-f86f0e82fefb">
@@ -106,6 +121,11 @@
     <role id="RO-ab672900-fc63-42b7-ac78-717b8233a27b">
       <name>Departmental Student Administration Employee</name>
       <description/>
+      <notes/>
+    </role>
+    <role id="RO-25b99031-dbb3-4a6f-b076-dc85b7d7ca2c">
+      <name>Dummy</name>
+      <description>Dummy role which represents the applicant.</description>
       <notes/>
     </role>
     <role id="RO-0626d16e-964a-455b-8003-9cb76d0fbf1f">

@@ -177,12 +177,12 @@
         <task id="Request_On_Time">
           <name>Request On Time?</name>
           <flowsInto>
-            <nextElementRef id="Gather_Additional_Forms_Optional" />
-            <predicate ordering="0">/Net/REQ_ON_TIME/text() = true()</predicate>
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Add_Motivation_Letter_Request" />
             <isDefaultFlow />
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Gather_Additional_Forms_Optional" />
+            <predicate ordering="0">/Net/REQ_ON_TIME/text() = true()</predicate>
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -251,12 +251,12 @@
         <task id="Wait_for_forms_to_be_filled_out">
           <name>Wait for forms to be filled out</name>
           <flowsInto>
-            <nextElementRef id="OutputCondition" />
-            <isDefaultFlow />
-          </flowsInto>
-          <flowsInto>
             <nextElementRef id="Check_if_IBAN_is_valid" />
             <predicate ordering="0">boolean(/Net/REPLY_ON_TIME/text()='true')</predicate>
+          </flowsInto>
+          <flowsInto>
+            <nextElementRef id="OutputCondition" />
+            <isDefaultFlow />
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -282,12 +282,12 @@
         <task id="Check_if_IBAN_is_valid">
           <name>Check if IBAN is valid</name>
           <flowsInto>
-            <nextElementRef id="Check_if_forms_are_complete" />
-            <predicate ordering="0">boolean(/Net/iban_valid/text()='true')</predicate>
+            <nextElementRef id="Add_explanation_missing_items" />
+            <isDefaultFlow />
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="Register_Request" />
-            <isDefaultFlow />
+            <nextElementRef id="Check_if_forms_are_complete" />
+            <predicate ordering="0">boolean(/Net/iban_valid/text()='true')</predicate>
           </flowsInto>
           <join code="xor" />
           <split code="xor" />
@@ -316,24 +316,38 @@
           </resourcing>
           <decomposesTo id="Check_if_IBAN_is_valid" />
         </task>
-        <task id="Check_if_forms_are_complete">
-          <name>Check if forms are complete</name>
+        <task id="Add_explanation_missing_items">
+          <name>Add explanation missing items</name>
           <flowsInto>
             <nextElementRef id="Register_Request" />
-            <isDefaultFlow />
           </flowsInto>
+          <join code="xor" />
+          <split code="and" />
+          <resourcing>
+            <offer initiator="system">
+              <distributionSet>
+                <initialSet>
+                  <role>RO-2bc02896-e76d-4362-817b-249c2b15d9be</role>
+                </initialSet>
+              </distributionSet>
+            </offer>
+            <allocate initiator="user" />
+            <start initiator="user" />
+          </resourcing>
+          <decomposesTo id="Add_explanation_missing_items" />
+        </task>
+        <task id="Check_if_forms_are_complete">
+          <name>Check if forms are complete</name>
           <flowsInto>
             <nextElementRef id="Dummy_State" />
             <predicate ordering="0">boolean(/Net/FORMS_COMPLETE/text()='true')</predicate>
           </flowsInto>
+          <flowsInto>
+            <nextElementRef id="Add_explanation_missing_items" />
+            <isDefaultFlow />
+          </flowsInto>
           <join code="xor" />
           <split code="xor" />
-          <startingMappings>
-            <mapping>
-              <expression query="&lt;iban_valid&gt;{/Net/iban_valid/text()}&lt;/iban_valid&gt;" />
-              <mapsTo>iban_valid</mapsTo>
-            </mapping>
-          </startingMappings>
           <completedMappings>
             <mapping>
               <expression query="&lt;FORMS_COMPLETE&gt;{/Check_if_forms_are_complete/FORMS_COMPLETE/text()}&lt;/FORMS_COMPLETE&gt;" />
@@ -356,10 +370,10 @@
         <task id="Dummy_State">
           <name>Dummy State</name>
           <flowsInto>
-            <nextElementRef id="Motivation_letter_required" />
+            <nextElementRef id="Financial_Prerequisites_Ok" />
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="Financial_Prerequisites_Ok" />
+            <nextElementRef id="Motivation_letter_required" />
           </flowsInto>
           <flowsInto>
             <nextElementRef id="Prerequisites_Ok" />
@@ -786,10 +800,10 @@
         <task id="Payment_via_bank_student">
           <name>Payment via bank student</name>
           <flowsInto>
-            <nextElementRef id="Offer_Payment_to_External_Service" />
+            <nextElementRef id="C" />
           </flowsInto>
           <flowsInto>
-            <nextElementRef id="C" />
+            <nextElementRef id="Offer_Payment_to_External_Service" />
           </flowsInto>
           <join code="and" />
           <split code="and" />
@@ -935,6 +949,10 @@
       <name>Add Motivation Letter Request</name>
       <externalInteraction>manual</externalInteraction>
     </decomposition>
+    <decomposition id="Add_explanation_missing_items" xsi:type="WebServiceGatewayFactsType">
+      <name>Add explanation missing items</name>
+      <externalInteraction>manual</externalInteraction>
+    </decomposition>
     <decomposition id="Add_notebook_to_Bulk_order" xsi:type="WebServiceGatewayFactsType">
       <name>Add notebook to Bulk order</name>
       <externalInteraction>manual</externalInteraction>
@@ -958,12 +976,6 @@
     </decomposition>
     <decomposition id="Check_if_forms_are_complete" xsi:type="WebServiceGatewayFactsType">
       <name>Check if forms are complete</name>
-      <inputParam>
-        <index>1</index>
-        <name>iban_valid</name>
-        <type>string</type>
-        <namespace>http://www.w3.org/2001/XMLSchema</namespace>
-      </inputParam>
       <outputParam>
         <index>0</index>
         <name>FORMS_COMPLETE</name>
@@ -1175,9 +1187,9 @@
     <specification id="Stu_Assignment_Final_Version">
       <size w="58" h="28"/>
       <net id="Net">
-        <bounds x="-1427" y="0" w="3048" h="761"/>
-        <frame x="0" y="0" w="1367" h="680"/>
-        <viewport x="0" y="0" w="1367" h="680"/>
+        <bounds x="-1272" y="-163" w="3048" h="761"/>
+        <frame x="0" y="0" w="1367" h="538"/>
+        <viewport x="0" y="0" w="1367" h="538"/>
         <vertex id="OutputCondition">
           <attributes>
             <bounds x="2,996" y="404" w="32" h="32"/>
@@ -1250,6 +1262,24 @@
             <position>12</position>
             <attributes>
               <bounds x="2,770" y="516" w="11" h="32"/>
+            </attributes>
+          </decorator>
+        </container>
+        <container id="Add_explanation_missing_items">
+          <vertex>
+            <attributes>
+              <bounds x="512" y="612" w="32" h="32"/>
+            </attributes>
+          </vertex>
+          <label>
+            <attributes>
+              <bounds x="484" y="644" w="97" h="61"/>
+            </attributes>
+          </label>
+          <decorator type="XOR_join">
+            <position>13</position>
+            <attributes>
+              <bounds x="543" y="612" w="11" h="32"/>
             </attributes>
           </decorator>
         </container>
@@ -1847,17 +1877,6 @@
             <lineStyle>11</lineStyle>
           </attributes>
         </flow>
-        <flow source="Check_if_IBAN_is_valid" target="Register_Request">
-          <ports in="2" out="4"/>
-          <attributes>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="866" y="251.5"/>
-              <value x="452" y="125"/>
-              <value x="147" y="312"/>
-            </points>
-          </attributes>
-        </flow>
         <flow source="Pick_up_Laptop" target="Dummy_State_2">
           <ports in="13" out="2"/>
           <attributes>
@@ -1895,17 +1914,6 @@
               <value x="2,529" y="383.5"/>
               <value x="2,468" y="325"/>
               <value x="2,351" y="323.5"/>
-            </points>
-          </attributes>
-        </flow>
-        <flow source="Check_if_forms_are_complete" target="Register_Request">
-          <ports in="2" out="3"/>
-          <attributes>
-            <lineStyle>12</lineStyle>
-            <points>
-              <value x="981" y="251.5"/>
-              <value x="541" y="637"/>
-              <value x="142" y="335.25"/>
             </points>
           </attributes>
         </flow>
@@ -2016,16 +2024,14 @@
             </points>
           </attributes>
         </flow>
-        <flow source="Financial_Prerequisites_Ok" target="Notify_student">
-          <label>No</label>
-          <ports in="3" out="1"/>
+        <flow source="Check_if_forms_are_complete" target="Add_explanation_missing_items">
+          <ports in="2" out="2"/>
           <attributes>
-            <labelposition x="483" y="-14"/>
             <lineStyle>12</lineStyle>
             <points>
-              <value x="1,321" y="395.25"/>
-              <value x="1,476" y="480"/>
-              <value x="1,574" y="607.75"/>
+              <value x="981" y="251.5"/>
+              <value x="887" y="503"/>
+              <value x="561" y="603.5"/>
             </points>
           </attributes>
         </flow>
@@ -2039,6 +2045,19 @@
             <points>
               <value x="437" y="395.5"/>
               <value x="463.5" y="500"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Financial_Prerequisites_Ok" target="Notify_student">
+          <label>No</label>
+          <ports in="3" out="1"/>
+          <attributes>
+            <labelposition x="483" y="-14"/>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="1,321" y="395.25"/>
+              <value x="1,476" y="480"/>
+              <value x="1,574" y="607.75"/>
             </points>
           </attributes>
         </flow>
@@ -2062,6 +2081,17 @@
             <points>
               <value x="2,351" y="323.5"/>
               <value x="2,482" y="175.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Check_if_IBAN_is_valid" target="Add_explanation_missing_items">
+          <ports in="2" out="2"/>
+          <attributes>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="866" y="251.5"/>
+              <value x="797" y="483"/>
+              <value x="553" y="627.5"/>
             </points>
           </attributes>
         </flow>
@@ -2133,6 +2163,17 @@
             <points>
               <value x="437" y="395.5"/>
               <value x="518" y="395.5"/>
+            </points>
+          </attributes>
+        </flow>
+        <flow source="Add_explanation_missing_items" target="Register_Request">
+          <ports in="12" out="2"/>
+          <attributes>
+            <lineStyle>12</lineStyle>
+            <points>
+              <value x="512" y="627.5"/>
+              <value x="184" y="552"/>
+              <value x="142" y="327.5"/>
             </points>
           </attributes>
         </flow>
@@ -2294,6 +2335,12 @@
             </points>
           </attributes>
         </flow>
+        <flow source="Forms_Complete_Dummy_State" target="Gather_Standard_Forms">
+          <ports in="2" out="12"/>
+          <attributes>
+            <lineStyle>11</lineStyle>
+          </attributes>
+        </flow>
         <flow source="Dummy_State_1" target="Register_Student">
           <ports in="2" out="2"/>
           <attributes>
@@ -2310,12 +2357,6 @@
               <value x="1,841" y="423.25"/>
               <value x="1,936" y="391.5"/>
             </points>
-          </attributes>
-        </flow>
-        <flow source="Forms_Complete_Dummy_State" target="Gather_Standard_Forms">
-          <ports in="2" out="12"/>
-          <attributes>
-            <lineStyle>11</lineStyle>
           </attributes>
         </flow>
         <flow source="Add_Motivation_Letter_Request" target="Gather_Additional_Forms_Optional">
