@@ -19,14 +19,14 @@ In this subsection, we explain the time distributions of the tasks, the probabil
 		Send enrollment package & norm(3, 1, 0, 10) & Mail Department Employee \\ \hline
 		Fill out and send back forms & norm(10080, 4320, 1440, 40320) & / \\ \hline
 		Check if forms are complete & norm(4, 2, 1, 10) & Administrative Employee \\ \hline
-		Add explanation missing items & norm(3, 1, 0, 8) & Mail Department Employee \\ \hline
+		Add explanation missing items & norm(3, 1, 0, 8) & Mail Department Employee \\ \hline	
 		Check prerequisites & norm(10, 2, 2, 20) & Administrative Employee \\ \hline
 		Check financial details & norm(8, 2, 0, 20) & Financial Department Employee \\ \hline
 		Check motivation letter & norm(15, 10, 1, 45) & Departmental Executive Board Employee \\ \hline
 		Notify student & norm(4, 1, 0, 10) & Mail Department Employee \\ \hline
 		Order separate notebook & norm(10, 2, 2, 20) & NSC Employee \\ \hline
 		Add notebook to Bulk order & norm(5, 1, 0, 10) & NSC Employee \\ \hline
-		Notebook arrives & norm(20160, 10080, 1440, 50400) & NSC Employee \\ \hline
+		Notebook arrives & norm(20160, 10080, 1440, 50400) & / \\ \hline
 		Register student & norm(10, 3, 2, 20) & 
 		Administrative Employee \\ \hline
 		Register student at Department & norm(5, 1, 0, 10) & Departmental Student Administration Employee \\ \hline
@@ -47,16 +47,33 @@ In this subsection, we explain the time distributions of the tasks, the probabil
 		\textbf{Gateway name} & \textbf{Probabilities} \\ \hline\hline
 		On time? & Yes: 85\%, No: 15\% \\ \hline
 		Complete? & Yes: 75\%, No: 25\% \\ \hline
-		Verified? (Prerequisites) & Yes: 70\%, No: 30\% \\ \hline
+		Verified? (Prerequisites) & Yes: 80\%, No: 20\% \\ \hline
 		Verified? (Financial details) & Yes: 90\%, No: 10\% \\ \hline
 		Motivational letter? & Yes: 15\%, No: 85\% \\ \hline
-		Motivational ok? & Yes: 40\%, No: 60\% \\ \hline
+		Motivation ok? & Yes: 40\%, No: 60\% \\ \hline
 		Request on Time & Yes: 85\%, No: 15\% \\ \hline	
 		Payment method & Via bank: 80\%, Cash: 20\% \\ \hline			
 		\hline
 	\end{tabular}
 	\caption{The probabilities for the gateways (where applicable)}
-	\label{fig:tasktimes1}
+	\label{fig:probabilities1}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tabular}{ | c | c | }
+		\hline
+		\textbf{Resource name} & \textbf{Amount} \\ \hline\hline
+		Administrative Employee & 2 \\ \hline		
+		Mail Department Employee & 2 \\ \hline
+		NSC Employee & 5 \\ \hline
+		Financial Department Employee & 1 \\ \hline
+		Departmental Executive Board Employee & 1 \\ \hline
+		Departmental Student Administration Employee & 1 \\ \hline
+		\hline
+	\end{tabular}
+	\caption{The available resources}
+	\label{fig:resources}
 \end{figure}
 
 

@@ -1,4 +1,6 @@
 % The results of the simulation on model 2.
+
+%Beschrijven verbeteringen performance tov model 1, door design decisions ..
 \begin{figure}[h!]
 	\centering
 	\begin{tabular}{ | c | c | c | }
@@ -31,4 +33,42 @@
 	\end{tabular}
 	\caption{The time distributions and required resources per task}
 	\label{fig:tasktimes2}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tabular}{ | c | c | }
+		\hline
+		\textbf{Gateway name} & \textbf{Probabilities} \\ \hline\hline
+		On time? & Yes: 85\%, No: 15\% \\ \hline
+		IBAN valid? & Yes: 95\%, No: 5\% \\ \hline
+		Complete? & Yes: 75\%, No: 25\% \\ \hline
+		Verified? (Prerequisites) & Yes: 80\%, No: 20\% \\ \hline
+		Verified? (Financial details) & Yes: 95\%, No: 5\% \\ \hline
+		Motivational letter? & Yes: 15\%, No: 85\% \\ \hline
+		Motivation ok? & Yes: 40\%, No: 60\% \\ \hline
+		Request on Time & Yes: 85\%, No: 15\% \\ \hline	
+		Student Wants to pay in Cash & Yes: 20\%, No: 80\% \\ \hline	
+		Payment successful & Successful: 60\%, Delayed: 25\%, Failed: 15\% \\ \hline			
+		\hline
+	\end{tabular}
+	\caption{The probabilities for the gateways (where applicable)}
+	\label{fig:probabilities2}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tabular}{ | c | c | }
+		\hline
+		\textbf{Resource name} & \textbf{Amount} \\ \hline\hline
+		Administrative Employee & 2 \\ \hline		
+		Mail Department Employee & 2 \\ \hline
+		NSC Employee & 5 \\ \hline
+		Financial Department Employee & 1 \\ \hline
+		Departmental Executive Board Employee & 1 \\ \hline
+		Departmental Student Administration Employee & 1 \\ \hline
+		\hline
+	\end{tabular}
+	\caption{The available resources}
+	\label{fig:resources}
 \end{figure}
