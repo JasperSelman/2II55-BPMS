@@ -1,0 +1,72 @@
+digraph {
+	rankdir=LR;
+	splines=ortho;
+	node [shape=box];
+
+	start [label="",shape=circle];
+	end [label="",shape=circle];
+	
+	a [label="",shape=diamond];
+	on_time [label="",shape=diamond];
+	c [label="",shape=diamond];
+	d [label="",shape=diamond];
+	e [label="",shape=diamond];
+	f [label="",shape=diamond];
+	g [label="",shape=diamond];
+	h [label="",shape=diamond];
+	i [label="",shape=diamond];
+	j [label="",shape=diamond];
+	k [label="",shape=diamond];
+	l [label="",shape=diamond];
+	m [label="",shape=diamond];
+
+	start -> register_request;
+
+	register_request -> a;
+	a -> gather_standard_forms;
+	a -> on_time;
+	on_time -> c;
+	on_time -> add_motivation_letter_request;
+	add_motivation_letter_request -> c;
+	gather_standard_forms -> d;
+	c -> d;
+	
+	d -> send_enrollment_package -> fill_out_forms -> check_if_forms_complete;
+	
+	check_if_forms_complete -> e;
+	e -> check_prereq;
+	check_prereq -> h;
+	e -> check_financial;
+	check_financial -> h;
+	e -> f;
+	f -> g;
+	f -> check_motivation_letter;
+	check_motivation_letter -> g;
+	g -> h;
+	
+	h -> i;
+	
+	i -> register_student;
+	register_student -> register_at_dept;
+	register_at_dept -> notify_success;
+	
+	i -> j;
+	j -> order_separate;
+	j -> add_to_bulk;
+	order_separate -> k;
+	add_to_bulk -> k;
+	
+	k -> notebook_arrives;
+	notebook_arrives -> payment_via_bank;
+	notebook_arrives -> pay_in_cash;
+	
+	payment_via_bank -> l;
+	pay_in_cash -> l;
+	
+	l -> pick_up_laptop;
+	
+	pick_up_laptop -> m;
+	notify_success -> m;
+	
+	m -> end;
+}
