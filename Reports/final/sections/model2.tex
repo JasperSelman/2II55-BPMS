@@ -7,6 +7,7 @@
 % patterns. Feel free to refer to earlier parts in the report.
 % Soundness Argue that the control flow of the process is sound.
 
+\subsection{Description}
 In this section we describe how we altered the process from Section~\ref{sec:model1} so that is comprehends to the new additional requirements, which are stated in \autoref{app:appendix_additional}.
 We also made some improvements and these are also described in this section.
 A complete overview of the second bizagi model van be found in \autoref{app:appendix_model2}.
@@ -49,3 +50,18 @@ The laptop is not immediately necessary to do this, but a complete registration 
 	\caption{The changed part of the second model in Bizagi}
 	\label{fig:model2-part1}
 \end{figure}
+
+\subsection{Workflow patterns}
+
+The workflow patterns in version 2 of the model are the same as those described in Section~\ref{sec:model1:patterns}.
+
+\subsection{Soundness}
+
+For the second model, we just used ProM to show soundness.
+
+\subsubsection{ProM}
+
+We used ProM to check the soundness of our model.
+The resulting net can be seen in Appendix~\ref{app:prom}.
+
+The Woflan analyzer gave the results we expected: aside from the fact that we have three ending places, the net is valid.
