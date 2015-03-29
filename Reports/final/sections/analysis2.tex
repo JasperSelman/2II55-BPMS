@@ -1,6 +1,10 @@
 % The results of the simulation on model 2.
 
 %Beschrijven verbeteringen performance tov model 1, door design decisions ..
+
+\subsection{Simulation setup}
+In this section we describe the simulation of model 2. First we describe the setup, as tasks have been added and some task time distributions and probabilities have changed. After this, we describe the results of the simulation of this model. In figure \ref{fig:tasktimes2} we show the time distributions and performers of each task. In figure \ref{fig:probabilities2} we show the probabilities used for the gateways. Finally, in figure \ref{fig:resources2} we show the amount of resources used for the different roles.\\
+
 \begin{figure}[h!]
 	\centering
 	\begin{tabularx}{\textwidth}{ | X | X | X | }
@@ -70,4 +74,28 @@
 	\end{tabular}
 	\caption{The available resources}
 	\label{fig:resources2}
+\end{figure}
+
+\subsection{Simulation results}
+In this subsection we describe the simulation results of the most important things that we expect to have changed since model 1, which are the flow time and the resource utilizations.\\
+
+The flow time now is 39979.8 $\pm$ 229.3 minutes, which is about 27.8 days. This is a much higher flow time. This difference in flow time can be explained by the additional constraints.\\
+
+The resource utilizations now are as shown in figure \ref{fig:resourcesutil2}. As we can see, most roles have similar utilization as in model 1. Clearly, the NSC employee has much less utilization than in model 1 as it now no longer actively waits for notebooks to arrive.\\
+
+\begin{figure}[h!]
+\centering
+\begin{tabular}{ | c | c | }
+	\hline
+	\textbf{Resource name} & \textbf{Utilization} \\ \hline\hline
+	Administrative Employee & 56.8 $\pm$ 0.25 \\ \hline		
+	Mail Department Employee & 28.4 $\pm$ 0.17 \\ \hline
+	NSC Employee & 14.3 $\pm$ 0.13 \\ \hline
+	Financial Department Employee & 18.3 $\pm$ 0.07 \\ \hline
+	Departmental Executive Board Employee & 5.4 $\pm$ 0.13 \\ \hline
+	Departmental Student Administration Employee & 5.9 $\pm$ 0.07 \\ \hline
+	\hline
+\end{tabular}
+\caption{The available resources}
+\label{fig:resourcesutil2}
 \end{figure}

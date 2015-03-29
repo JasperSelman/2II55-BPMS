@@ -4,9 +4,12 @@
 % reached steady state.
 
 \subsection{Performance choices}
+Our focus for performance lies on the flow time and the resource utilization. Therefore we chose to perform the prerequisite check, financial details check and (when required) motivational letter check in parallel. Though this is less efficient, as when one the prerequisite check fails, we could would not have had to execute the other two checks, and similarly when the financial detail check fails, we would not have had to check the motivational letter. Despite this, we implemented it this way as when the student does pass these checks, it is faster when done in parallel and thus we decrease the flow time.
 
 \subsection{Simulation setup}
-In this subsection, we explain the time distributions of the tasks, the probabilities for the gateways (when applicable), the resources required per task and the resources which are available for the tasks. We use the truncated normal distribution to describe the time each task takes. This way, we prevent it from ever giving unrealistic values, like negative durations. We write the truncated normal distribution as norm(\textit{mean}, \textit{standard deviation}, \textit{minimum value}, \textit{maximum value}), where each value is in minutes.
+In this subsection, we explain the time distributions of the tasks, the probabilities for the gateways (when applicable), the resources required per task and the resources which are available for the tasks. We use the truncated normal distribution to describe the time each task takes. This way, we prevent it from ever giving unrealistic values, like negative durations. We write the truncated normal distribution as norm(\textit{mean}, \textit{standard deviation}, \textit{minimum value}, \textit{maximum value}), where each value is in minutes.\\
+For the calculation of the confidence intervals, we run 30 replications of the Time Analysis and Resource Analysis using the \textit{What-If Analysis} of Bizagi. Furthermore, we run the Time Analysis simulations for 60 days to make sure everything finishes on time, and the Resource Analysis simulations for 28 days, as this is the top of the 95\% confidence interval for the total time and we do not want the additional time to lower the resource utilization.\\
+In figure \ref{fig:tasktimes1} we show the time distributions and performers of each task. In figure \ref{fig:probabilities1} we show the probabilities used for the gateways. Finally, in figure \ref{fig:resources1} we show the amount of resources used for the different roles.
 
 \begin{figure}[h!]
 	\centering
@@ -64,9 +67,9 @@ In this subsection, we explain the time distributions of the tasks, the probabil
 	\begin{tabular}{ | c | c | }
 		\hline
 		\textbf{Resource name} & \textbf{Amount} \\ \hline\hline
-		Administrative Employee & 2 \\ \hline		
-		Mail Department Employee & 2 \\ \hline
-		NSC Employee & 5 \\ \hline
+		Administrative Employee & 1 \\ \hline		
+		Mail Department Employee & 1 \\ \hline
+		NSC Employee & 1 \\ \hline
 		Financial Department Employee & 1 \\ \hline
 		Departmental Executive Board Employee & 1 \\ \hline
 		Departmental Student Administration Employee & 1 \\ \hline
@@ -78,4 +81,29 @@ In this subsection, we explain the time distributions of the tasks, the probabil
 
 
 \subsection{Simulation results}
-In this subsection we describe the simulation results. All results can be found in appendix \autoref{app:appendix_analysis1}
+In this subsection we describe the simulation results. All simulation results can be found in the provided Excel files, which have a second sheet for the Resource Analysis. Here we describe the most important parts of the simulation of model 1, which are: the number of students registered and failed, the flow time, the number of students that have a late request (either right away or due to incomplete form submission), the number of instances failed on the prerequisites check, the number of instances failed on the financial details check and the resource utilization.\\
+
+In model 1, there are on average 658 $\pm$ 4.7 students who were able to register completely. As there is a total of 1000 students on each run, there are 342 students who failed to register. Of these 56.4 $\pm$ 2.8 fail registration due to not sending the registration forms back in two weeks. 92.5 $\pm$ 3.2 fail because their prerequisites are not sufficient. 136.3 $\pm$ 3.3 fail for having incorrect financial details and the remaining 56.9 fail as they did not submit their registration request on time and their submitted motivation letter was insufficient.\\
+
+The flow time of model 1 is 25876 $\pm$ 250.6 minutes, which is about 18 days. When we take into account that sending the forms back, receiving the notebook and processing the payment can take some time, this seems like a reasonable amount of total time.\\
+
+There are 195.6 $\pm$ 4.6 students which send a registration request too late. This includes both the students that send it late initially as well as the ones that have to resubmit the forms because they did submitted them incomplete and are late on the second attempt.\\
+
+The confidence intervals for the utilization of each role can be found in figure \ref{fig:resourcesutil1}. So we use the NSC employees a bit too much. This can be explained by the fact that in model 1, we did not split the arrival of the notebook and waiting for the arrival of the notebook into two tasks. Due to this, the NSC employee is busy waiting for as long as the laptop is on the way. We fixed this in model 2.
+
+\begin{figure}[h!]
+	\centering
+	\begin{tabular}{ | c | c | }
+		\hline
+		\textbf{Resource name} & \textbf{Utilization} \\ \hline\hline
+		Administrative Employee & 59.2 $\pm$ 0.22 \\ \hline		
+		Mail Department Employee & 28.9 $\pm$ 0.17 \\ \hline
+		NSC Employee & 90.9 $\pm$ 0.82 \\ \hline
+		Financial Department Employee & 18.4 $\pm$ 0.08 \\ \hline
+		Departmental Executive Board Employee & 5.5 $\pm$ 0.20 \\ \hline
+		Departmental Student Administration Employee & 8.1 $\pm$ 0.05 \\ \hline
+		\hline
+	\end{tabular}
+	\caption{The available resources}
+	\label{fig:resourcesutil1}
+\end{figure}
